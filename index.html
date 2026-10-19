@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>共通テストトライアル 2</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .fade-in { animation: fadeIn 0.4s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    .passage-text { font-size: 1.05rem; line-height: 1.75; margin-bottom: 1.25rem; color: #334155; text-align: justify; }
+    .passage-text.indent { text-indent: 1.5rem; }
+    input[type="radio"]:checked + span, input[type="checkbox"]:checked + span { font-weight: bold; }
+    .handwriting { font-family: 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif; }
+    .slide-box { background: #ffffff; padding: 1rem; border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .slide-title { font-weight: 800; font-size: 1.05rem; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.25rem; margin-bottom: 0.5rem; }
+    
+    /* 文法ハイライト用スタイル */
+    body.show-grammar .g-point {
+      background-color: #fef08a;
+      border-bottom: 2px solid #ca8a04;
+      padding: 0 2px;
+      border-radius: 3px;
+      position: relative;
+      transition: all 0.2s;
+    }
+    body.show-grammar .g-tag {
+      display: inline-block;
+      font-family: sans-serif;
+      font-size: 0.7rem;
+      font-weight: bold;
+      color: #ffffff;
+      background-color: #b45309;
+      padding: 1px 5px;
+      border-radius: 4px;
+      margin: 0 3px;
+      vertical-align: middle;
+    }
+    .g-tag { display: none; }
+  </style>
+</head>
+<body class="bg-slate-50 font-serif text-slate-800 min-h-screen flex flex-col">
+
+  <header class="bg-slate-900 shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+        <div class="flex items-center gap-3 flex-wrap">
+          <h1 class="text-lg md:text-2xl font-bold tracking-widest text-white">共通テストトライアル 2</h1>
+          <span id="saveStatusBadge" class="font-sans text-xs bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+            <span id="saveStatusDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span id="saveStatusText">自動保存対応</span>
+          </span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <button onclick="openSaveModal()" class="font-sans text-xs md:text-sm bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-3 py-1.5 rounded-lg shadow transition-all flex items-center gap-1.5">
+            <span>💾 途中保存 / 再開</span>
+          </button>
+          <button id="grammarToggleBtn" onclick="toggleGrammarHighlight()" class="font-sans text-xs md:text-sm bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3 py-1.5 rounded-lg shadow transition-all flex items-center gap-1.5">
+            <span>🔍 文法・構文ハイライト: OFF</span>
+          </button>
+        </div>
+      </div>
+      <nav class="flex overflow-x-auto whitespace-nowrap gap-1 pb-1 scrollbar-hide font-sans text-sm">
+        <button id="nav1" onclick="switchTab(1)" class="px-4 py-2 rounded-t-lg bg-blue-600 text-white font-bold transition-all shadow-sm">第1問</button>
+        <button id="nav2" onclick="switchTab(2)" class="px-4 py-2 rounded-t-lg bg-slate-700 text-slate-300 hover:bg-slate-600 font-bold transition-all">第2問</button>
+        <button id="nav3" onclick="switchTab(3)" class="px-4 py-2 rounded-t-lg bg-slate-700 text-slate-300 hover:bg-slate-600 font-bold transition-all">第3問</button>
+        <button id="nav4" onclick="switchTab(4)" class="px-4 py-2 rounded-t-lg bg-slate-700 text-slate-300 hover:bg-slate-600 font-bold transition-all">第4問</button>
+        <button id="nav5" onclick="switchTab(5)" class="px-4 py-2 rounded-t-lg bg-slate-700 text-slate-300 hover:bg-slate-600 font-bold transition-all">第5問</button>
+        <button id="nav6" onclick="switchTab(6)" class="px-4 py-2 rounded-t-lg bg-slate-700 text-slate-300 hover:bg-slate-600 font-bold transition-all">第6問</button>
+        <button id="nav7" onclick="switchTab(7)" class="px-4 py-2 rounded-t-lg bg-slate-700 text-slate-300 hover:bg-slate-600 font-bold transition-all">第7問</button>
+        <button id="nav8" onclick="switchTab(8)" class="px-4 py-2 rounded-t-lg bg-slate-700 text-slate-300 hover:bg-slate-600 font-bold transition-all">第8問</button>
+        <button id="nav9" onclick="switchTab(9)" class="px-4 py-2 rounded-t-lg bg-emerald-700 text-emerald-100 hover:bg-emerald-600 font-bold transition-all ml-1 border-l border-slate-600">総合結果</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-7xl mx-auto w-full p-4 md:p-6 fade-in">
+
+    <!-- ==================== 第1問 ==================== -->
+    <section id="tab1" class="tab-content block">
+      <div class="flex flex-col lg:flex-row gap-8">
+        <div class="flex-1 lg:w-1/2 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+          <div class="flex justify-between items-end border-b-2 border-slate-800 pb-2 mb-6">
+            <h2 class="text-2xl font-bold">第1問</h2><span class="font-sans text-slate-500 font-bold">(配点 6)</span>
+          </div>
+          <p class="mb-4 text-sm text-gray-500 font-sans italic bg-slate-100 p-3 rounded">You belong to a university outdoor club and are reading a leaflet and exchanging text messages with your teammates about next weekend's activity.</p>
+          
+          <div class="border-2 border-teal-300 p-4 rounded-xl bg-teal-50 text-center mb-6">
+            <h3 class="text-2xl font-black text-teal-900 uppercase">Emerald River Eco-Kayak Tour</h3>
+            <p class="font-bold text-teal-700 mb-4">Paddle through ancient mangrove forests with a certified biologist!</p>
+            <div class="text-left font-sans text-sm space-y-2 mb-4 bg-white p-3 rounded shadow-sm border border-teal-200">
+              <p><strong>Sessions:</strong> Morning (9:00 AM) &amp; Afternoon (2:00 PM)</p>
+              <p><strong>Equipment Rental:</strong> Kayak &amp; life jacket included (<span class="g-point">Waterproof phone pouches are lent free of charge as long as you return them before 5:00 PM<span class="g-tag">条件: as long as + 現在形 (~する限り)</span></span>).</p>
+              <p><strong>Weather Policy:</strong> <span class="g-point">Should strong winds occur in the afternoon, the 2:00 PM session will be replaced with an indoor mangrove workshop<span class="g-tag">仮定法未来の倒置: Should S + 原形 (万一〜なら)</span></span>.</p>
+            </div>
+            <p class="text-xs text-teal-950 font-bold text-left bg-teal-200 p-2.5 rounded leading-relaxed">
+              *Safety Guideline: <span class="g-point">Our head guide urges that every participant wear water shoes with firm soles<span class="g-tag">要求・提案: urge that S (should) 原形</span></span> <span class="g-point">for fear that sharp river shells might injure bare feet<span class="g-tag">目的否定: for fear that S might V (~しないように)</span></span>. Flip-flops and bare feet are strictly prohibited.
+            </p>
+          </div>
+
+          <div class="space-y-4 font-sans text-sm bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <div class="bg-white p-3 rounded-lg border shadow-sm">
+              <span class="font-bold text-blue-700">Noah:</span> Hey team! Let's book the 2:00 PM kayak session for next Saturday. I love sleeping in on weekends!
+            </div>
+            <div class="bg-white p-3 rounded-lg border shadow-sm">
+              <span class="font-bold text-purple-700">Hana:</span> Hold on, Noah! According to the coastal weather chart, <span class="g-point">the wind is bound to pick up strongly after noon<span class="g-tag">be bound to V (きっと〜する)</span></span>. <span class="g-point">We might as well book the 9:00 AM session rather than risk having our trip turned into an indoor lecture<span class="g-tag">might as well A rather than B (BするくらいならAした方がましだ)</span></span>!
+            </div>
+            <div class="bg-blue-100 p-3 rounded-lg border border-blue-300 shadow-sm ml-8">
+              <span class="font-bold text-slate-800">You:</span> Hana is right. Let's aim for the 9:00 AM session. By the way, I only have beach sandals. <span class="g-point">We had better stop by the sports outlet near the station tomorrow afternoon<span class="g-tag">助動詞表現: had better + 原形</span></span> to buy proper water shoes.
+            </div>
+            <div class="bg-white p-3 rounded-lg border shadow-sm">
+              <span class="font-bold text-blue-700">Noah:</span> Good catch! <span class="g-point">I cannot read that safety notice without feeling grateful you checked it<span class="g-tag">二重否定: cannot A without B (Aすれば必ずBする)</span></span>. Let's meet at the sports outlet tomorrow at 4:00 PM!
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-1 lg:w-1/2 space-y-6">
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q1-1">
+            <p class="font-bold mb-3 text-lg">問1 Why did the teammates decide to choose the 9:00 AM session instead of the 2:00 PM session?</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q1-1" value="1" class="mr-3 w-5 h-5 text-blue-600"><span>① Because waterproof pouches are only lent to morning participants.</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q1-1" value="2" class="mr-3 w-5 h-5 text-blue-600"><span>② Because strong afternoon winds could cancel the outdoor kayaking.</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q1-1" value="3" class="mr-3 w-5 h-5 text-blue-600"><span>③ Because they want to attend the indoor mangrove workshop in the morning.</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q1-1" value="4" class="mr-3 w-5 h-5 text-blue-600"><span>④ Because Noah has a part-time job at the sports outlet at 2:00 PM.</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q1-2">
+            <p class="font-bold mb-3 text-lg">問2 Why does the head guide require participants to wear firm-soled water shoes?</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q1-2" value="1" class="mr-3 w-5 h-5 text-blue-600"><span>① To prevent their feet from being cut by sharp shells in the river.</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q1-2" value="2" class="mr-3 w-5 h-5 text-blue-600"><span>② To keep the inside of the rental kayaks clean and dry.</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q1-2" value="3" class="mr-3 w-5 h-5 text-blue-600"><span>③ To help them swim faster if the kayak turns over.</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q1-2" value="4" class="mr-3 w-5 h-5 text-blue-600"><span>④ To protect rare mangrove roots from being stepped on.</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q1-3">
+            <p class="font-bold mb-3 text-lg">問3 What are the teammates going to do tomorrow afternoon?</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q1-3" value="1" class="mr-3 w-5 h-5 text-blue-600"><span>① Return their waterproof phone pouches before 5:00 PM.</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q1-3" value="2" class="mr-3 w-5 h-5 text-blue-600"><span>② Meet at a store near the station to purchase footwear for the tour.</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q1-3" value="3" class="mr-3 w-5 h-5 text-blue-600"><span>③ Practice paddling in the university swimming pool at 4:00 PM.</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q1-3" value="4" class="mr-3 w-5 h-5 text-blue-600"><span>④ Borrow beach sandals from the outdoor club room.</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="pt-4 flex justify-center"><button onclick="gradeSection(1)" class="grade-btn bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-10 rounded-full shadow-lg transition-transform active:scale-95 text-lg">採点する</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 第2問 ==================== -->
+    <section id="tab2" class="tab-content hidden">
+      <div class="flex flex-col lg:flex-row gap-8">
+        <div class="flex-1 lg:w-1/2 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+          <div class="flex justify-between items-end border-b-2 border-slate-800 pb-2 mb-6">
+            <h2 class="text-2xl font-bold">第2問</h2><span class="font-sans text-slate-500 font-bold">(配点 12)</span>
+          </div>
+          <p class="mb-4 text-sm text-gray-500 font-sans italic bg-slate-100 p-3 rounded">You are a student committee member at a UK university. You are reading a report on the newly renovated Central Library, followed by students' comments.</p>
+          
+          <div class="border-2 border-sky-200 p-5 rounded-lg mb-6 bg-sky-50">
+            <h3 class="text-xl font-bold text-sky-900 mb-2">Posted by the Library Committee — 12 November 2026</h3>
+            <p class="text-sm font-bold text-slate-700 mb-2 border-b border-sky-200 pb-2">Central Library Renovation: 6-Month Evaluation Report</p>
+            <p class="text-sm text-slate-800 font-sans leading-relaxed mb-2">
+              In May 2026, we remodeled the third floor into a "Collaborative Learning Commons" and installed soundproof study pods. Electronic gate logs <span class="g-point">demonstrate that daily student visits have risen by 32% compared with last autumn<span class="g-tag">Fact指標: demonstrate that ~ (客観データ)</span></span>. Although a few students requested 24-hour opening times, <span class="g-point">we consider that the current closing time of 11:00 PM is reasonable enough to balance study needs with campus security<span class="g-tag">Opinion指標: we consider that ~ / reasonable (主観的判断)</span></span>.
+            </p>
+            <ul class="text-xs space-y-1.5 text-slate-800 font-sans list-disc pl-5 bg-white p-3 rounded border border-sky-100">
+              <li><strong>Rule Reminder:</strong> <span class="g-point">Under no circumstances may users leave personal laptops unattended<span class="g-tag">否定語文頭倒置: Under no circumstances may S V</span></span> in the study pods for more than 20 minutes.</li>
+            </ul>
+          </div>
+
+          <h4 class="font-bold text-lg mb-3 border-b pb-1">Student Comments</h4>
+          <div class="space-y-4 font-sans text-sm">
+            <div class="bg-white p-4 rounded-lg border shadow-sm">
+              <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-slate-800 text-base">Liam (3rd-year Law)</span><span class="text-emerald-600 font-bold text-xs">Positive</span>
+              </div>
+              <p class="text-slate-700">The new soundproof pods are a lifesaver for online job interviews! <span class="g-point">But for these private booths, I could never have attended my internship interview without background noise<span class="g-tag">仮定法過去完了: But for ~, S could never have Vpp</span></span>. However, <span class="g-point">with selfish students leaving their textbooks on desks for hours<span class="g-tag">付帯状況: with + O + V-ing</span></span>, it is almost impossible to find an empty pod during exam week.</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg border shadow-sm">
+              <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-slate-800 text-base">Maya (2nd-year Architecture)</span><span class="text-amber-600 font-bold text-xs">Mixed</span>
+              </div>
+              <p class="text-slate-700"><span class="g-point">Nothing is more inspiring for group projects than the movable whiteboards<span class="g-tag">比較による最上級表現: Nothing is more A than B</span></span> in the Learning Commons. Still, the air-conditioning system is poorly designed; <span class="g-point">with all the windows sealed shut<span class="g-tag">付帯状況: with + O + Vpp (過去分詞)</span></span>, the room gets stuffy in the afternoon, and <span class="g-point">many seats remain unoccupied simply because people hog them with bags<span class="g-tag">remain + C (過去分詞)</span></span>.</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg border shadow-sm">
+              <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-slate-800 text-base">Toby (1st-year Economics)</span><span class="text-blue-600 font-bold text-xs">Suggestion</span>
+              </div>
+              <p class="text-slate-700">The digital reservation app for the pods is super easy to use. Yet, <span class="g-point">not until library staff strictly enforce the 20-minute absence rule will the seat-hogging problem disappear<span class="g-tag">Not until ~ の文頭倒置: Not until S V will S V</span></span>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-1 lg:w-1/2 space-y-6">
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q2-1">
+            <p class="font-bold mb-3 text-lg">問1 Which option best describes the Library Committee's <u>opinion</u> rather than an objective fact?</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q2-1" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① The third floor was remodeled into a Collaborative Learning Commons in May 2026.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q2-1" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② Daily student visits increased by 32% compared with the previous autumn.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q2-1" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ Closing the library at 11:00 PM is an appropriate compromise between study needs and safety.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q2-1" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ The library rules prohibit leaving laptops unattended in pods for over 20 minutes.</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q2-2">
+            <p class="font-bold mb-3 text-lg">問2 Which option best reflects Liam's comment?</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q2-2" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① He failed his internship interview because the soundproof pod was too noisy.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q2-2" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② The private booths enabled him to take his online interview in a quiet environment.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q2-2" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ He accidentally left his textbooks in a pod for several hours during exam week.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q2-2" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ He thinks the soundproof pods should be removed to make space for bookshelves.</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q2-3">
+            <p class="font-bold mb-3 text-lg">問3 What feature of the renovated floor does Maya praise the most?</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q2-3" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① The fresh breeze coming through the large open windows.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q2-3" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② The movable whiteboards that are ideal for collaborative work.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q2-3" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ The powerful air-conditioning system in the afternoon.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q2-3" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ The strict enforcement of the 20-minute absence rule by staff.</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q2-4">
+            <p class="font-bold mb-3 text-lg">問4 What common problem is pointed out by Liam, Maya, and Toby?</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q2-4" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① The digital reservation app frequently crashes during exam week.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q2-4" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② Some users reserve or occupy seats with their belongings while being away for long periods.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q2-4" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ The electronic gates at the entrance take too long to scan student IDs.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q2-4" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ The library closes too early on weekday afternoons.</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="pt-4 flex justify-center"><button onclick="gradeSection(2)" class="grade-btn bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-10 rounded-full shadow-lg transition-transform active:scale-95 text-lg">採点する</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 第3問 ==================== -->
+    <section id="tab3" class="tab-content hidden">
+      <div class="flex flex-col lg:flex-row gap-8">
+        <div class="flex-1 lg:w-1/2 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+          <div class="flex justify-between items-end border-b-2 border-slate-800 pb-2 mb-6">
+            <h2 class="text-2xl font-bold">第3問</h2><span class="font-sans text-slate-500 font-bold">(配点 9)</span>
+          </div>
+          <p class="mb-4 text-sm text-gray-500 font-sans italic bg-slate-100 p-3 rounded">You are reading a blog post written by Oliver, an exchange student in Japan, about an astronomical photography contest he entered.</p>
+          
+          <h3 class="text-2xl font-bold text-center mb-4 mt-2">Chasing the Comet</h3>
+          <p class="passage-text indent">
+            Last Saturday night, I stood shivering on the summit of Mt. Akagi, aiming my camera at the starry sky. I was determined to photograph a rare comet that visits our solar system only once every eighty years. When I pressed the shutter button, however, the viewfinder remained completely blurry! To my dismay, <span class="g-point">I realized that I had left my autofocus adapter on my desk when I had cleaned the camera sensor at home the night before<span class="g-tag">Level 1 大過去トラップ(最古の出来事): had left / had cleaned</span></span>. Even worse, right before driving up the mountain, <span class="g-point">I had boasted to my photography club friends at the gas station that I would capture the sharpest image of the year<span class="g-tag">大過去(登山直前): had boasted</span></span>.
+          </p>
+          <p class="passage-text indent">
+            <span class="g-point">Scarcely had I begun to despair when an elderly photographer standing beside me spoke up kindly<span class="g-tag">否定語倒置＋過去完了: Scarcely had S Vpp when ~</span></span>. "Modern cameras spoil us," he chuckled. <span class="g-point">Shining a dim red flashlight onto my lens barrel, the old man showed me how to align the manual infinity mark by hand<span class="g-tag">Level 2 分詞構文: Shining ~, S + V (骨格は the old man showed me)</span></span>, <span class="g-point">explaining that red light preserves human night vision<span class="g-tag">分詞構文(付帯状況): explaining that ~</span></span>.
+          </p>
+          <p class="passage-text indent">
+            Following his advice, I rotated the cold metal ring millimeter by millimeter until the distant stars shrank into tiny, diamond-sharp points. I took a 30-second exposure just as the comet's emerald tail flared brightly above the ridge.
+          </p>
+          <p class="passage-text indent">
+            Yesterday, the contest results were announced at our school festival. <span class="g-point">It was that manually focused photograph that won the Grand Prize<span class="g-tag">強調構文: It was ~ that ...</span></span>! Looking at the framed print, I understood <span class="g-point">what the old man had meant<span class="g-tag">関係代名詞what + 大過去</span></span>: mastering basic manual skills is far more reliable than depending blindly on automatic gadgets.
+          </p>
+
+          <!-- 4コマ風イラスト SVG -->
+          <div class="border p-4 rounded-xl bg-gray-50 mt-6 shadow-inner">
+            <svg viewBox="0 0 400 110" class="w-full h-auto font-sans">
+              <!-- A: 山頂で老カメラマンに赤色ライトで手動ピントを教わる -->
+              <rect x="0" y="10" width="90" height="90" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+              <text x="12" y="25" text-anchor="middle" font-size="12" font-weight="bold" fill="#334155">A</text>
+              <circle cx="30" cy="40" r="7" fill="#fca5a5"/>
+              <path d="M30 47 L30 75" stroke="#1e293b" stroke-width="2"/>
+              <circle cx="62" cy="40" r="7" fill="#cbd5e1"/>
+              <path d="M62 47 L62 75" stroke="#1e293b" stroke-width="2"/>
+              <polygon points="55,50 40,45 40,55" fill="#ef4444" opacity="0.5"/> <!-- 赤色ライト -->
+              <text x="45" y="92" text-anchor="middle" font-size="8" fill="#475569">Manual Focus Help</text>
+
+              <!-- B: 文化祭でグランプリを受賞する -->
+              <rect x="100" y="10" width="90" height="90" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+              <text x="112" y="25" text-anchor="middle" font-size="12" font-weight="bold" fill="#334155">B</text>
+              <rect x="125" y="30" width="40" height="30" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+              <line x1="132" y1="50" x2="158" y2="36" stroke="#34d399" stroke-width="2.5"/> <!-- 彗星の写真 -->
+              <circle cx="165" cy="60" r="6" fill="#f59e0b"/>
+              <text x="145" y="92" text-anchor="middle" font-size="8" fill="#475569">Grand Prize</text>
+
+              <!-- C: 前夜に自宅でセンサーを掃除しアダプターを机に忘れる -->
+              <rect x="200" y="10" width="90" height="90" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+              <text x="212" y="25" text-anchor="middle" font-size="12" font-weight="bold" fill="#334155">C</text>
+              <rect x="220" y="62" width="50" height="6" fill="#94a3b8"/> <!-- 机 -->
+              <rect x="238" y="52" width="12" height="10" fill="#334155" rx="2"/> <!-- アダプター -->
+              <circle cx="265" cy="40" r="7" fill="#fca5a5"/>
+              <text x="245" y="92" text-anchor="middle" font-size="8" fill="#475569">Desk at Home</text>
+
+              <!-- D: 登山直前にガソリンスタンドで友人に自慢する -->
+              <rect x="300" y="10" width="90" height="90" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+              <text x="312" y="25" text-anchor="middle" font-size="12" font-weight="bold" fill="#334155">D</text>
+              <circle cx="330" cy="42" r="7" fill="#fca5a5"/>
+              <path d="M330 49 L330 75" stroke="#1e293b" stroke-width="2"/>
+              <circle cx="360" cy="42" r="7" fill="#93c5fd"/>
+              <path d="M360 49 L360 75" stroke="#1e293b" stroke-width="2"/>
+              <text x="345" y="92" text-anchor="middle" font-size="8" fill="#475569">Gas Station</text>
+            </svg>
+            <p class="text-xs text-center text-gray-500 mt-2 font-sans">※イラストはイメージであり、出来事の順序とは一致しません。</p>
+          </div>
+        </div>
+
+        <div class="flex-1 lg:w-1/2 space-y-6">
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q3-1">
+            <p class="font-bold mb-3 text-lg">問1 Choose the correct chronological order of the events (A–D) as they actually occurred in time.</p>
+            <ul class="list-disc pl-5 mb-4 text-md font-sans text-slate-700 space-y-1">
+              <li>A. Being taught how to focus manually by an elderly photographer on the summit.</li>
+              <li>B. Winning the Grand Prize at the school festival contest.</li>
+              <li>C. Cleaning the camera sensor at home and leaving the adapter on the desk.</li>
+              <li>D. Boasting to club friends at the gas station right before driving up the mountain.</li>
+            </ul>
+            <div class="flex items-center gap-2 font-sans">
+              <select class="order-select border border-slate-400 p-2 rounded bg-white w-16 text-center"><option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select>
+              <span>→</span>
+              <select class="order-select border border-slate-400 p-2 rounded bg-white w-16 text-center"><option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select>
+              <span>→</span>
+              <select class="order-select border border-slate-400 p-2 rounded bg-white w-16 text-center"><option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select>
+              <span>→</span>
+              <select class="order-select border border-slate-400 p-2 rounded bg-white w-16 text-center"><option value=""></option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q3-2">
+            <p class="font-bold mb-3 text-lg">問2 Why did the elderly photographer use a dim red flashlight instead of a normal white one?</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q3-2" value="1" class="mr-3 w-5 h-5 text-blue-600"><span>① Because red light prevents human eyes from losing their adaptation to the dark.</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q3-2" value="2" class="mr-3 w-5 h-5 text-blue-600"><span>② Because the battery of his white flashlight had run out.</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q3-2" value="3" class="mr-3 w-5 h-5 text-blue-600"><span>③ Because he wanted to make the comet's tail look red in the photo.</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q3-2" value="4" class="mr-3 w-5 h-5 text-blue-600"><span>④ Because he was signaling to rescue helicopters in the sky.</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q3-3">
+            <p class="font-bold mb-3 text-lg">問3 What lesson did Oliver learn from his experience on Mt. Akagi?</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q3-3" value="1" class="mr-3 w-5 h-5 text-blue-600"><span>① Blurry photographs are more artistic than sharply focused ones.</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q3-3" value="2" class="mr-3 w-5 h-5 text-blue-600"><span>② Acquiring fundamental manual skills is more dependable than relying solely on automation.</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q3-3" value="3" class="mr-3 w-5 h-5 text-blue-600"><span>③ Beginners should never clean their camera sensors at home.</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q3-3" value="4" class="mr-3 w-5 h-5 text-blue-600"><span>④ Expensive autofocus adapters are essential for winning photo contests.</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="pt-6 flex justify-center"><button onclick="gradeSection(3)" class="grade-btn bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 px-12 rounded-full shadow-lg transition-transform active:scale-95 text-lg">採点する</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 第4問 ==================== -->
+    <section id="tab4" class="tab-content hidden">
+      <div class="flex flex-col lg:flex-row gap-8">
+        <div class="flex-1 lg:w-1/2 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+          <div class="flex justify-between items-end border-b-2 border-slate-800 pb-2 mb-6">
+            <h2 class="text-2xl font-bold">第4問</h2><span class="font-sans text-slate-500 font-bold">(配点 12)</span>
+          </div>
+          <p class="mb-4 text-sm text-gray-500 font-sans italic bg-slate-100 p-3 rounded">In your university's Environmental Club, you have written a draft article for the campus newsletter about reducing cafeteria food waste, and your advisor has left comments.</p>
+          
+          <h3 class="text-2xl font-bold text-center mb-4 mt-2 text-slate-800">Rethinking Plates: The Trayless Cafeteria Initiative</h3>
+          
+          <div class="my-6 space-y-6">
+            <div class="bg-white p-4 rounded-xl border-2 border-slate-200 shadow-sm">
+              <svg viewBox="0 0 450 240" class="w-full h-auto font-sans">
+                <text x="225" y="20" font-size="12.5" text-anchor="middle" font-weight="bold" fill="#1e293b">Average Daily Uneaten Food Waste per Student (Grams)</text>
+                
+                <!-- 軸 -->
+                <line x1="55" y1="195" x2="400" y2="195" stroke="#64748b" stroke-width="2"/>
+                <line x1="55" y1="195" x2="55" y2="40" stroke="#64748b" stroke-width="2"/>
+                
+                <!-- メモリ -->
+                <text x="45" y="200" font-size="10" text-anchor="end" fill="#64748b">0g</text>
+                <text x="45" y="160" font-size="10" text-anchor="end" fill="#64748b">40g</text>
+                <text x="45" y="120" font-size="10" text-anchor="end" fill="#64748b">80g</text>
+                <text x="45" y="80" font-size="10" text-anchor="end" fill="#64748b">120g</text>
+                <text x="45" y="45" font-size="10" text-anchor="end" fill="#64748b">160g</text>
+                
+                <!-- 補助線 -->
+                <line x1="55" y1="155" x2="400" y2="155" stroke="#e2e8f0" stroke-dasharray="3"/>
+                <line x1="55" y1="115" x2="400" y2="115" stroke="#e2e8f0" stroke-dasharray="3"/>
+                <line x1="55" y1="75" x2="400" y2="75" stroke="#e2e8f0" stroke-dasharray="3"/>
+
+                <!-- Bar 1: Before Trial (Large Plastic Trays) 140g -->
+                <rect x="90" y="55" width="60" height="140" fill="#ef4444" rx="3"/>
+                <text x="120" y="49" font-size="10" font-weight="bold" text-anchor="middle" fill="#b91c1c">140g</text>
+                <text x="120" y="212" font-size="10" text-anchor="middle" fill="#334155">Before (With Trays)</text>
+
+                <!-- Bar 2: Poster Campaign Only 130g -->
+                <rect x="195" y="65" width="60" height="130" fill="#f59e0b" rx="3"/>
+                <text x="225" y="59" font-size="10" font-weight="bold" text-anchor="middle" fill="#b45309">130g</text>
+                <text x="225" y="212" font-size="10" text-anchor="middle" fill="#334155">Posters Only</text>
+
+                <!-- Bar 3: Trayless + Portion Choice 65g -->
+                <rect x="300" y="130" width="60" height="65" fill="#10b981" rx="3"/>
+                <text x="330" y="124" font-size="10" font-weight="bold" text-anchor="middle" fill="#047857">65g</text>
+                <text x="330" y="212" font-size="10" text-anchor="middle" fill="#334155">Trayless + Small Rice</text>
+              </svg>
+            </div>
+          </div>
+
+          <p class="passage-text">
+            At our university buffet cafeteria, students used to generate an average of 140 grams of uneaten food waste per person every day. Last semester, we put up posters urging students not to waste food, which reduced waste slightly to 130 grams. Realizing that <span class="g-point">a mere appeal to morality can no more solve structural overconsumption than a bandage can cure a broken bone<span class="g-tag">クジラ構文: A can no more V B than C can V D (CがDできないのと同様にAもBできない)</span></span>, our club proposed a behavioral "nudge" experiment this month.
+          </p>
+          <p class="passage-text">
+            Here is how the new system works. First, <span class="g-point">having been removed from the buffet counter<span class="g-tag">受動態の完了分詞構文: Having been Vpp</span></span>, large plastic trays are no longer available. <strong>&lt; A &gt;</strong> Instead, students carry only the plates and bowls they can hold in their two hands. <strong>&lt; B &gt;</strong> Second, at the rice counter, students can choose a "Mini Portion" and receive a 20-yen discount coupon. <strong>&lt; C &gt;</strong> Finally, after finishing their meal, diners return their dishes to the conveyor belt. <strong>&lt; D &gt;</strong>
+          </p>
+          <p class="passage-text">
+            <span class="g-point font-bold text-blue-800">【 Connection 】<span class="g-tag">Level 4 論理接続詞 (因果関係)</span></span>, average daily food waste plummeted to 65 grams per student—less than half the original amount! Furthermore, the kitchen staff saved 400 liters of hot water daily because they no longer had to wash hundreds of greasy plastic trays. By changing the physical environment rather than lecturing diners,<u>we can make sustainability effortless.</u>
+          </p>
+
+          <div class="bg-amber-50 border-l-4 border-amber-500 p-3.5 rounded-r-xl font-sans text-xs text-slate-700 space-y-1.5 mt-4">
+            <p class="font-bold text-amber-900">Advisor's Comments:</p>
+            <p><strong>Comment (1):</strong> In Paragraph 2, please insert the sentence explaining the psychological effect of not having a tray so readers understand why people take less food.</p>
+            <p><strong>Comment (2):</strong> Expand the underlined final phrase so that it summarizes both the waste reduction and the resource-saving benefit mentioned in Paragraph 3.</p>
+          </div>
+        </div>
+
+        <div class="flex-1 lg:w-1/2 space-y-6">
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q4-1">
+            <p class="font-bold mb-3 text-lg">問1 According to the graph and Paragraph 1, why did the club decide to try a behavioral "nudge" experiment?</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q4-1" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① Because the poster campaign alone reduced daily food waste by only 10 grams per student.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q4-1" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② Because the poster campaign caused food waste to increase from 130g to 140g.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q4-1" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ Because students complained that plastic trays were too heavy to carry.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q4-1" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ Because the cafeteria ran out of plates and bowls last semester.</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q4-2">
+            <p class="font-bold mb-3 text-lg">問2 Based on Advisor's Comment (1), choose the best place (<strong>&lt; A &gt;</strong>–<strong>&lt; D &gt;</strong>) to insert the sentence below.<br><span class="text-sm font-sans bg-slate-100 px-2 py-1 rounded block mt-2 text-slate-800">"This simple physical limit naturally prevents diners from loading up on extra side dishes on impulse."</span></p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q4-2" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① &lt; A &gt;</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q4-2" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② &lt; B &gt;</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q4-2" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ &lt; C &gt;</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q4-2" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ &lt; D &gt;</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q4-3">
+            <p class="font-bold mb-3 text-lg">問3 Which of the following best fits the 【 Connection 】 blank at the beginning of Paragraph 3?</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q4-3" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① Nevertheless</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q4-3" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② On the contrary</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q4-3" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ Consequently</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q4-3" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ Otherwise</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q4-4">
+            <p class="font-bold mb-3 text-lg">問4 Based on Advisor's Comment (2), which phrase best replaces the underlined part at the end of Paragraph 3?</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q4-4" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① we can simultaneously cut leftover food in half and conserve precious water</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q4-4" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② we can encourage students to eat twice as much rice every afternoon</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q4-4" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ we can eliminate the need for conveyor belts and kitchen staff</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q4-4" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ we can prove that moral posters are more effective than discounts</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="pt-6 flex justify-center"><button onclick="gradeSection(4)" class="grade-btn bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 px-12 rounded-full shadow-lg transition-transform active:scale-95 text-lg">採点する</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 第5問 ==================== -->
+    <section id="tab5" class="tab-content hidden">
+      <div class="flex flex-col lg:flex-row gap-8">
+        <div class="flex-1 lg:w-1/2 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+          <div class="flex justify-between items-end border-b-2 border-slate-800 pb-2 mb-6">
+            <h2 class="text-2xl font-bold">第5問</h2><span class="font-sans text-slate-500 font-bold">(配点 16)</span>
+          </div>
+          <p class="mb-4 text-sm text-gray-500 font-sans italic bg-slate-100 p-3 rounded">In English class, your teacher has asked you to create an outline of the following story for a discussion group.</p>
+          
+          <h3 class="text-3xl font-bold text-center mb-6 mt-4 text-slate-800">The Silent Luthier</h3>
+          
+          <p class="passage-text">
+            When Haruto inherited his grandfather's acoustic guitar workshop in Nagano, he felt crushed by the weight of expectations. <span class="g-point">Much as he admired his late grandfather's legendary reputation<span class="g-tag">譲歩の倒置: Much as S + V (大いに〜だけれども)</span></span>, Haruto suffered from severe imposter syndrome. Convinced that customers would look down on a young craftsman, he spent months trying to replicate his grandfather's exact varnish formula and bracing patterns down to the last detail.
+          </p>
+          <p class="passage-text">
+            One autumn morning, a famous concert guitarist named Ms. Rina visited the shop carrying a battered cedar guitar case. Opening it, she revealed a 40-year-old instrument whose soundboard had been cracked by dry winter air. "Your grandfather built this for me when I was twenty," she said softly. "Can you restore its voice before my charity concert next month?"
+          </p>
+          <p class="passage-text">
+            <span class="g-point">Such was Haruto's anxiety that he stayed up night after night<span class="g-tag">補語の文頭倒置: Such + be + S that ~ (Sが大変なものだったので〜)</span></span>, terrified of altering the original tone. When he carefully removed the back plate to repair the crack, however, <span class="g-point">little did he dream that he would find a penciled note written by his grandfather on the inner spruce wood<span class="g-tag">準否定語倒置: Little did S dream that ~ (〜とは夢にも思わなかった)</span></span>.
+          </p>
+          <p class="passage-text">
+            The note read: <em>"No two trees grow in the same wind. Do not copy my past—carve the wood according to the voice it wants to sing today."</em>
+          </p>
+          <p class="passage-text">
+            Staring at the message, Haruto felt a sudden wave of liberation. He realized that <span class="g-point">he need not have feared expressing his own craftsmanship<span class="g-tag">need not have Vpp (〜する必要はなかったのに)</span></span>. Instead of merely gluing the old crack shut, Haruto shaved a new, slightly lighter bridge tailored to how the aged cedar wood had matured over four decades.
+          </p>
+          <p class="passage-text">
+            When Ms. Rina returned and strummed a single chord, her eyes filled with tears. "It doesn't just sound like the guitar I remember," she whispered in awe. "<span class="g-point">Not only has it regained its warmth, but it resonates more richly than ever before<span class="g-tag">否定語倒置: Not only has S Vpp, but ~</span></span>." Haruto smiled, finally understanding that honoring a tradition means helping it evolve, not freezing it in time.
+          </p>
+        </div>
+
+        <div class="flex-1 lg:w-1/2 space-y-6">
+          
+          <div class="bg-yellow-50 p-6 rounded-2xl border border-yellow-300 shadow-inner handwriting text-slate-800">
+            <h4 class="text-2xl font-bold border-b border-slate-400 pb-2 mb-4 text-center">Story Discussion Notes</h4>
+            
+            <p class="font-bold text-lg mb-3">Plot Progression:</p>
+            <div class="flex flex-col gap-2 mb-6 ml-4">
+              <div class="border border-slate-400 bg-white p-3 rounded shadow-sm text-sm">1. Haruto feels pressured and tries to blindly imitate his late grandfather's exact techniques.</div>
+              <div class="text-center text-slate-500 font-bold">↓</div>
+              <div class="border-2 border-dashed border-blue-400 bg-blue-50 p-3 rounded shadow-sm font-bold text-blue-800 text-center text-lg">【 30 】</div>
+              <div class="text-center text-slate-500 font-bold">↓</div>
+              <div class="border-2 border-dashed border-blue-400 bg-blue-50 p-3 rounded shadow-sm font-bold text-blue-600 text-center text-lg">【 31 】</div>
+              <div class="text-center text-slate-500 font-bold">↓</div>
+              <div class="border border-slate-400 bg-white p-3 rounded shadow-sm text-sm">4. Haruto designs a lighter bridge suited to the matured cedar wood.</div>
+              <div class="text-center text-slate-500 font-bold">↓</div>
+              <div class="border border-slate-400 bg-white p-3 rounded shadow-sm text-sm">5. Ms. Rina is deeply moved by the guitar's richer resonance.</div>
+            </div>
+
+            <h4 class="font-bold text-lg mb-2">Character &amp; Theme</h4>
+            <ul class="list-disc pl-6 mb-4 space-y-3">
+              <li><strong>The Turning Point:</strong> Upon reading the hidden note, Haruto realized that he <span class="font-bold text-red-600 bg-white px-2 border border-slate-300 shadow-sm">【 32 】</span>.</li>
+              <li><strong>Grandfather's Philosophy:</strong> The penciled message taught Haruto to <span class="font-bold text-red-600 bg-white px-2 border border-slate-300 shadow-sm">【 33 】</span>.</li>
+              <li><strong>Final Realization:</strong> Haruto learned that true tradition is kept alive by <span class="font-bold text-red-600 bg-white px-2 border border-slate-300 shadow-sm">【 34 】</span>.</li>
+            </ul>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q5-1">
+            <p class="font-bold mb-4 text-lg">問1 Choose the correct combination of events for [ 30 ] and [ 31 ] to complete the plot progression.</p>
+            <ul class="list-none mb-4 text-sm font-sans space-y-2 border p-3 rounded bg-slate-50">
+              <li><span class="font-bold mr-2">A.</span> Ms. Rina brings in a 40-year-old cracked guitar built by Haruto's grandfather.</li>
+              <li><span class="font-bold mr-2">B.</span> Haruto accidentally breaks the spruce back plate while applying varnish.</li>
+              <li><span class="font-bold mr-2">C.</span> Haruto discovers a penciled message inside the instrument while opening it for repair.</li>
+              <li><span class="font-bold mr-2">D.</span> Ms. Rina cancels her charity concert because the guitar cannot be fixed in time.</li>
+            </ul>
+            <div class="space-y-3 font-sans text-md">
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q5-1" value="1" class="mr-3 w-5 h-5 text-blue-600"><span>① [30] = A, [31] = B</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q5-1" value="2" class="mr-3 w-5 h-5 text-blue-600"><span>② [30] = A, [31] = C</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q5-1" value="3" class="mr-3 w-5 h-5 text-blue-600"><span>③ [30] = B, [31] = D</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q5-1" value="4" class="mr-3 w-5 h-5 text-blue-600"><span>④ [30] = C, [31] = A</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q5-2">
+            <p class="font-bold mb-4 text-lg">問2 Choose the best option for [ 32 ].</p>
+            <div class="space-y-3 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q5-2" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① had no reason to be afraid of applying his own judgment and skill</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q5-2" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② should have refused Ms. Rina's difficult repair request from the start</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q5-2" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ needed to buy new cedar wood imported from overseas</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q5-2" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ had forgotten to sign his grandfather's name on the inner wood</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q5-3">
+            <p class="font-bold mb-4 text-lg">問3 Choose the best option for [ 33 ].</p>
+            <div class="space-y-3 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q5-3" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① memorize the exact measurements of past instruments without changing anything</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q5-3" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② shape each piece of wood in response to its unique, present condition</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q5-3" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ use only trees that grew on windless mountains in Nagano</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q5-3" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ switch from building acoustic guitars to electric guitars</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q5-4">
+            <p class="font-bold mb-4 text-lg">問4 Choose the best option for [ 34 ].</p>
+            <div class="space-y-3 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q5-4" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① allowing it to grow and adapt rather than merely preserving the past</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q5-4" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② locking old instruments inside glass cases so they never crack</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q5-4" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ hiding secret notes inside every product sold to customers</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q5-4" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ working alone at night without asking anyone for feedback</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="pt-6 flex flex-col items-center">
+            <button onclick="gradeSection(5)" class="grade-btn bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 px-12 rounded-full shadow-lg transition-transform active:scale-95 text-lg w-full md:w-auto">採点する</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 第6問 ==================== -->
+    <section id="tab6" class="tab-content hidden">
+      <div class="flex flex-col lg:flex-row gap-8">
+        <div class="flex-1 lg:w-1/2 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+          <div class="flex justify-between items-end border-b-2 border-slate-800 pb-2 mb-6">
+            <h2 class="text-2xl font-bold">第6問</h2><span class="font-sans text-slate-500 font-bold">(配点 12)</span>
+          </div>
+          <p class="mb-4 text-sm text-gray-500 font-sans italic bg-slate-100 p-3 rounded">Your psychology teacher has assigned this article to you. You are preparing presentation slides about how "daydreaming" affects the human brain.</p>
+          
+          <h3 class="text-3xl font-bold text-center mb-6 mt-4 text-slate-800">The Creative Power of the Wandering Mind</h3>
+
+          <p class="passage-text">
+            For generations, teachers and bosses have scolded people for "daydreaming," assuming that <span class="g-point">whenever our attention drifts away from an immediate task, the brain simply goes idle<span class="g-tag">複合関係副詞 whenever (〜するときはいつでも)</span></span>. However, modern neuroimaging has overturned this myth. When you stop focusing on external work—such as while taking a shower or strolling through a park—a vast neural circuit called the Default Mode Network (DMN) lights up. <span class="g-point">Far from being passive, the brain during mind-wandering is actively connecting distant memories and imagining future scenarios<span class="g-tag">慣用表現: Far from V-ing (〜するどころか)</span></span>.
+          </p>
+          <p class="passage-text">
+            Why is the DMN so crucial for creative breakthroughs? When you concentrate intensely on a single problem at your desk, your brain's "Executive Network" narrows your focus, <span class="g-point">which prevents remote ideas from combining freely<span class="g-tag">非制限用法 which + prevent O from V-ing</span></span>. In contrast, <span class="g-point">the more relaxed and undemanding your physical activity is, the more likely the DMN is to link seemingly unrelated concepts into an original solution<span class="g-tag">比例比較: The + 比較級 ~, the + 比較級 ...</span></span>. This explains why mathematicians and writers often experience sudden "Aha!" moments while walking or resting rather than staring at a screen.
+          </p>
+          <p class="passage-text">
+            Nevertheless, in today's hyper-connected society, our Default Mode Network is being starved of activation. Every time we have two minutes of free time—standing in an elevator or waiting for a train—we instinctively pull out our smartphones. <span class="g-point">Bombarding the brain with constant notifications and short videos forces our attention outward<span class="g-tag">動名詞主語 + force O + 副詞</span></span>, depriving the DMN of the quiet downtime it needs to consolidate memories.
+          </p>
+          <p class="passage-text">
+            To harness the benefits of productive mind-wandering, neuroscientists recommend scheduling "low-effort, screen-free intervals" into your daily routine. Activities such as gardening, jogging along a familiar path, or washing dishes by hand occupy just enough motor attention to keep you moving <span class="g-point">while leaving your inner mind free to roam and innovate<span class="g-tag">接続詞 + 分詞構文 + leave O C</span></span>.
+          </p>
+        </div>
+
+        <div class="flex-1 lg:w-1/2 space-y-6">
+          
+          <div class="bg-slate-200 p-6 rounded-2xl border border-slate-300 shadow-inner">
+            <h4 class="font-bold text-center mb-6 text-xl text-slate-800">Presentation Slides: The Wandering Mind</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-sans text-sm">
+              <!-- Slide 1 -->
+              <div class="slide-box aspect-video flex flex-col justify-center items-center relative bg-purple-950 text-white">
+                <div class="absolute bottom-2 right-3 text-xs text-purple-300">1</div>
+                <h5 class="font-bold text-xl text-center mb-2 text-purple-200">The Creative Power of<br>the Wandering Mind</h5>
+              </div>
+              
+              <!-- Slide 2 -->
+              <div class="slide-box aspect-video relative flex flex-col border-t-4 border-amber-400">
+                <div class="absolute bottom-2 right-3 text-xs text-gray-400">2</div>
+                <div class="slide-title">What is the DMN?</div>
+                <ul class="list-disc pl-5 mt-1 space-y-2 text-slate-700">
+                  <li>Default Mode Network (DMN).</li>
+                  <li>Activates when we are not focused on external tasks.</li>
+                  <li>Instead of being inactive, it <span class="font-bold text-red-600 bg-red-50 px-1 border border-red-200 rounded">【 39 】</span>.</li>
+                </ul>
+              </div>
+              
+              <!-- Slide 3 -->
+              <div class="slide-box aspect-video relative flex flex-col border-t-4 border-slate-800">
+                <div class="absolute bottom-2 right-3 text-xs text-gray-400">3</div>
+                <div class="slide-title">Why "Aha!" Moments Happen</div>
+                <ul class="list-disc pl-5 mt-1 space-y-2 text-slate-700">
+                  <li>Intense desk focus narrows attention.</li>
+                  <li>Relaxed, low-effort states allow the DMN to <span class="font-bold text-red-600 bg-red-50 px-2 py-0.5 border border-red-200 rounded mx-1">【 40 】</span>.</li>
+                </ul>
+              </div>
+              
+              <!-- Slide 4 -->
+              <div class="slide-box aspect-video relative flex flex-col border-t-4 border-blue-400">
+                <div class="absolute bottom-2 right-3 text-xs text-gray-400">4</div>
+                <div class="slide-title">The Modern Threat to Creativity</div>
+                <ul class="list-disc pl-5 mt-1 space-y-2 text-slate-700">
+                  <li>Checking smartphones during every spare moment.</li>
+                  <li>Constant digital input <span class="font-bold text-red-600 bg-red-50 px-2 py-0.5 border border-red-200 rounded mx-1">【 41 】</span>.</li>
+                </ul>
+              </div>
+              
+              <!-- Slide 5 -->
+              <div class="slide-box md:col-span-2 aspect-[3/1] relative flex flex-col justify-center items-center border-t-4 border-emerald-600">
+                <div class="absolute bottom-2 right-3 text-xs text-gray-400">5</div>
+                <div class="slide-title w-full text-center">Practical Tip for Students</div>
+                <p class="text-center text-slate-700 mt-2">To boost creativity and memory consolidation, engage in <br><span class="font-bold text-red-600 bg-red-50 px-3 py-1 border border-red-200 rounded inline-block mt-2 text-base">【 42 】</span>.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q6-1">
+            <p class="font-bold mb-4 text-lg">問1 Choose the best option for [ 39 ] on Slide 2.</p>
+            <div class="space-y-3 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q6-1" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① shuts down all memory storage to save energy</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q6-1" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② links distant memories and simulates future possibilities</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q6-1" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ forces you to concentrate on difficult math equations</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q6-1" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ only works when you are in deep, dreamless sleep</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q6-2">
+            <p class="font-bold mb-4 text-lg">問2 Choose the best option for [ 40 ] on Slide 3.</p>
+            <div class="space-y-3 font-sans text-md">
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q6-2" value="1" class="mr-3 w-5 h-5 text-blue-600"><span>① block out all unrelated concepts permanently</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q6-2" value="2" class="mr-3 w-5 h-5 text-blue-600"><span>② combine seemingly unconnected ideas into fresh solutions</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q6-2" value="3" class="mr-3 w-5 h-5 text-blue-600"><span>③ increase typing speed on computer keyboards</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q6-2" value="4" class="mr-3 w-5 h-5 text-blue-600"><span>④ replace the need for physical exercise</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q6-3">
+            <p class="font-bold mb-4 text-lg">問3 Choose the best option for [ 41 ] on Slide 4.</p>
+            <div class="space-y-3 font-sans text-md">
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q6-3" value="1" class="mr-3 w-5 h-5 text-blue-600"><span>① strengthens the Default Mode Network during train rides</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q6-3" value="2" class="mr-3 w-5 h-5 text-blue-600"><span>② robs the brain of the quiet downtime needed for the DMN</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q6-3" value="3" class="mr-3 w-5 h-5 text-blue-600"><span>③ helps students remember everything they read online</span></label>
+              <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q6-3" value="4" class="mr-3 w-5 h-5 text-blue-600"><span>④ makes elevators and trains move more efficiently</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q6-4">
+            <p class="font-bold mb-4 text-lg">問4 Choose the best option for [ 42 ] on Slide 5.</p>
+            <div class="space-y-3 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q6-4" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① high-stress competitive video games between study sessions</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q6-4" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② simple physical activities without digital screens, like walking or gardening</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q6-4" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ watching educational short videos whenever you wait for a train</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"><input type="radio" name="q6-4" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ studying at your desk for ten hours straight without taking breaks</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="pt-6 flex flex-col items-center">
+            <button onclick="gradeSection(6)" class="grade-btn bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 px-12 rounded-full shadow-lg transition-transform active:scale-95 text-lg w-full md:w-auto">採点する</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 第7問 ==================== -->
+    <section id="tab7" class="tab-content hidden">
+      <div class="flex flex-col lg:flex-row gap-8">
+        <div class="flex-1 lg:w-1/2 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+          <div class="flex justify-between items-end border-b-2 border-slate-800 pb-2 mb-6">
+            <h2 class="text-2xl font-bold">第7問</h2><span class="font-sans text-slate-500 font-bold">(配点 16)</span>
+          </div>
+          <p class="mb-4 text-sm text-gray-500 font-sans italic bg-slate-100 p-3 rounded">You are preparing a presentation for an environmental engineering class. You read this article about "Biomimicry" and are organizing your notes.</p>
+          
+          <h3 class="text-2xl font-bold text-center mb-6">Nature as Architect: The Promise of Biomimicry</h3>
+          <p class="passage-text indent">
+            Whenever human engineers face a complex design problem, there is a high probability that evolution has already solved it over billions of years. "Biomimicry" is the practice of emulating nature's time-tested structures and processes to create sustainable technologies. <span class="g-point">Observing how kingfishers dive from the air into water with barely a splash, Japanese engineers redesigned the nose cone of the 500-Series Shinkansen<span class="g-tag">Level 2 分詞構文: Observing ~, S + V (骨格は engineers redesigned...)</span></span>, <span class="g-point">eliminating thunderous tunnel boom while cutting electricity consumption by 15%<span class="g-tag">分詞構文(結果): eliminating ~</span></span>.
+          </p>
+          <p class="passage-text indent">
+            Biomimicry is proving equally transformative in modern architecture. In Harare, Zimbabwe, architect Mick Pearce was tasked with designing the Eastgate Centre, a massive office complex, without conventional air-conditioning. <span class="g-point">Inspired by the self-cooling mounds built by African compass termites<span class="g-tag">過去分詞の分詞構文: Inspired by ~</span></span>, Pearce created a passive ventilation system. Termites constantly open and close heating and cooling vents throughout their mound to regulate internal airflow. Similarly, the Eastgate Centre uses concrete chimneys and fans to draw in cool night air, <span class="g-point">storing the coolness in the building's heavy stone floors to absorb heat the following afternoon<span class="g-tag">分詞構文(付帯状況・結果)</span></span>. As a result, <span class="g-point">the energy consumed by the building is less than 10% of that of a conventional building of the same size<span class="g-tag">代名詞 that の照応: that = the energy</span></span>.
+          </p>
+          <p class="passage-text indent">
+            More recently, material scientists have turned their attention to the Namib Desert beetle, <span class="g-point">whose wing shells are covered with a microscopic pattern of water-attracting bumps and water-repelling grooves<span class="g-tag">所有格の関係代名詞: whose</span></span>. By leaning into the morning breeze, the beetle condenses fog droplets onto its back and channels the water straight into its mouth. <span class="g-point">Were arid coastal cities to coat building roofs with synthetic films mimicking this beetle's shell, they could harvest thousands of liters of clean drinking water directly from morning fog<span class="g-tag">仮定法未来の倒置: Were S to V ~, S could V</span></span>.
+          </p>
+          <p class="passage-text indent">
+            Despite these breakthroughs, <span class="g-point">the extent to which biomimicry can be commercialized depends on bridging the gap between biologists and industrial designers<span class="g-tag">前置詞 + 関係代名詞: the extent to which (~する程度)</span></span>. All too often, valuable biological research remains locked in academic journals that engineers rarely read. Establishing interdisciplinary databases is vital so that nature's blueprints can be translated into practical green innovations.
+          </p>
+
+          <div class="my-6 border border-slate-300 rounded-lg p-4 bg-slate-50 flex justify-center flex-col items-center">
+            <h4 class="font-bold text-sm mb-3 text-slate-700">Three Examples of Biomimicry</h4>
+            <svg viewBox="0 0 340 130" class="w-full max-w-sm h-auto font-sans">
+              <!-- Card 1 -->
+              <rect x="5" y="10" width="102" height="110" fill="#ffffff" stroke="#0284c7" stroke-width="1.5" rx="6"/>
+              <text x="56" y="28" font-size="9.5" font-weight="bold" fill="#0369a1" text-anchor="middle">Kingfisher Beak</text>
+              <path d="M25 55 Q55 45 85 55 Q55 65 25 55" fill="#38bdf8"/>
+              <text x="56" y="82" font-size="8.5" fill="#334155" text-anchor="middle">↓</text>
+              <text x="56" y="98" font-size="8.5" font-weight="bold" fill="#0f172a" text-anchor="middle">Bullet Train Nose</text>
+
+              <!-- Card 2 -->
+              <rect x="119" y="10" width="102" height="110" fill="#ffffff" stroke="#d97706" stroke-width="1.5" rx="6"/>
+              <text x="170" y="28" font-size="9.5" font-weight="bold" fill="#b45309" text-anchor="middle">Termite Mound</text>
+              <path d="M150 65 L162 40 L178 40 L190 65 Z" fill="#fcd34d" stroke="#b45309"/>
+              <text x="170" y="82" font-size="8.5" fill="#334155" text-anchor="middle">↓</text>
+              <text x="170" y="98" font-size="8.5" font-weight="bold" fill="#0f172a" text-anchor="middle">Passive Cooling</text>
+
+              <!-- Card 3 -->
+              <rect x="233" y="10" width="102" height="110" fill="#ffffff" stroke="#059669" stroke-width="1.5" rx="6"/>
+              <text x="284" y="28" font-size="9.5" font-weight="bold" fill="#047857" text-anchor="middle">Desert Beetle</text>
+              <ellipse cx="284" cy="53" rx="18" ry="11" fill="#34d399"/>
+              <text x="284" y="82" font-size="8.5" fill="#334155" text-anchor="middle">↓</text>
+              <text x="284" y="98" font-size="8.5" font-weight="bold" fill="#0f172a" text-anchor="middle">Fog Harvesting</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="flex-1 lg:w-1/2 space-y-6">
+          <div class="bg-indigo-50 p-6 rounded-2xl shadow-inner border border-indigo-200 font-sans text-sm">
+            <h4 class="text-xl font-bold border-b border-slate-400 pb-2 mb-4">Your Notes: Biomimicry in Engineering</h4>
+            
+            <p class="font-bold mb-2">1. Transportation: Kingfisher &amp; Shinkansen</p>
+            <ul class="list-none space-y-2 mb-4 ml-4 text-slate-700">
+              <li>• Imitating the kingfisher's beak shape allowed engineers to stop tunnel sonic booms and <span class="font-bold text-red-600 bg-red-50 px-1 border border-red-200 rounded">【 39 】</span>.</li>
+            </ul>
+
+            <p class="font-bold mb-2">2. Architecture: Termite Mounds &amp; Eastgate Centre</p>
+            <ul class="list-none space-y-2 mb-4 ml-4 text-slate-700">
+              <li>• Draws in cool air at night and stores the coolness in <span class="font-bold text-red-600 bg-red-50 px-1 border border-red-200 rounded">【 40 】</span> to absorb daytime heat.</li>
+              <li>• Uses less than 10% of the energy required by a standard building of comparable size.</li>
+            </ul>
+
+            <p class="font-bold mb-2">3. Water Resources: Namib Desert Beetle</p>
+            <ul class="list-none space-y-2 mb-4 ml-4 text-slate-700">
+              <li>• Uses both water-attracting bumps and water-repelling grooves to <span class="font-bold text-red-600 bg-red-50 px-1 border border-red-200 rounded">【 41 】</span>.</li>
+            </ul>
+
+            <p class="font-bold mb-2">4. Future Hurdle for Commercialization</p>
+            <ul class="list-disc pl-6 mb-4 text-slate-700">
+              <li>• Necessary to build shared databases so that <span class="font-bold text-red-600 bg-red-50 px-1 border border-red-200 rounded">【 42 】</span> can easily access biological discoveries.</li>
+            </ul>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q7-1">
+            <p class="font-bold mb-3 text-lg">問1 Choose the best option for [ 39 ].</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q7-1" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① allow trains to travel underwater</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q7-1" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② reduce power usage by 15%</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q7-1" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ attract kingfishers away from railway tracks</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q7-1" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ double the weight of the train cars</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q7-2">
+            <p class="font-bold mb-3 text-lg">問2 Choose the best option for [ 40 ].</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q7-2" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① underground water tanks</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q7-2" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② heavy stone floors</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q7-2" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ glass window frames</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q7-2" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ rooftop solar panels</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q7-3">
+            <p class="font-bold mb-3 text-lg">問3 Choose the best option for [ 41 ].</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q7-3" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① collect drinking water from morning fog</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q7-3" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② reflect intense desert sunlight into space</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q7-3" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ burrow deep into hot sand dunes</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q7-3" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ desalinate ocean water using wind power</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q7-4">
+            <p class="font-bold mb-3 text-lg">問4 Choose the best option for [ 42 ].</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q7-4" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① engineers and industrial designers</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q7-4" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② train passengers in Japan</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q7-4" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ office workers in Zimbabwe</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q7-4" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ wildlife photographers</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="pt-4 flex justify-center"><button onclick="gradeSection(7)" class="grade-btn bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-10 rounded-full shadow-lg transition-transform active:scale-95 text-lg">採点する</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 第8問 ==================== -->
+    <section id="tab8" class="tab-content hidden">
+      <div class="flex flex-col lg:flex-row gap-8">
+        <div class="flex-1 lg:w-1/2 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+          <div class="flex justify-between items-end border-b-2 border-slate-800 pb-2 mb-6">
+            <h2 class="text-2xl font-bold">第8問</h2><span class="font-sans text-slate-500 font-bold">(配点 17)</span>
+          </div>
+          <p class="mb-4 text-sm text-gray-500 font-sans italic bg-slate-100 p-3 rounded">You are working on an essay about whether governments should increase funding for space exploration or prioritize solving problems on Earth first.</p>
+
+          <h4 class="font-bold text-lg mb-3 border-b pb-1">Step 1: Read a range of opinions</h4>
+          <div class="space-y-4 font-sans text-sm mb-8">
+            <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+              <span class="font-bold text-blue-900 block mb-1">Dr. Vance (Astrophysicist)</span>
+              <span class="g-point">It is imperative that governments expand space exploration budgets<span class="g-tag">必要・重要の仮定法現在: It is imperative that S (should) V</span></span>. Space research is not about escaping Earth; it directly protects our planet. <span class="g-point">Were it not for Earth-observing satellites developed by space agencies, we could not accurately track global climate change or predict deadly typhoons<span class="g-tag">仮定法現在の倒置: Were it not for ~</span></span>.
+            </div>
+            <div class="bg-red-50 p-4 rounded-lg border border-red-100">
+              <span class="font-bold text-red-900 block mb-1">Marcus (Social Welfare Activist)</span>
+              <span class="g-point">Whatever scientific discoveries space missions may yield<span class="g-tag">複合関係形容詞: Whatever + 名詞 + S + may V</span></span>, spending billions of dollars on Mars rovers while millions of people lack clean water and healthcare on Earth is morally indefensible. Public tax money should solve urgent human suffering here first.
+            </div>
+            <div class="bg-green-50 p-4 rounded-lg border border-green-100">
+              <span class="font-bold text-green-900 block mb-1">Elena (Medical Engineer)</span>
+              People often forget how many everyday medical and environmental technologies originated in space programs. From water-purification filters to portable ultrasound scanners and high-efficiency solar cells, <span class="g-point">inventions designed for astronauts have saved countless lives on Earth<span class="g-tag">過去分詞の後置修飾</span></span>. Investing in space is investing in human innovation.
+            </div>
+            <div class="bg-purple-50 p-4 rounded-lg border border-purple-100">
+              <span class="font-bold text-purple-900 block mb-1">Prof. Koyama (Environmental Economist)</span>
+              Rocket launches themselves have a hidden environmental cost. Every heavy rocket launch releases tons of black carbon soot directly into the stratosphere, <span class="g-point">where it remains far longer than emissions from ground transport<span class="g-tag">非制限用法の関係副詞: where</span></span>. Expanding space launches recklessly will accelerate ozone depletion.
+            </div>
+            <div class="bg-orange-50 p-4 rounded-lg border border-orange-100">
+              <span class="font-bold text-orange-900 block mb-1">Lucas (High School Teacher)</span>
+              Space exploration inspires the next generation like nothing else. <span class="g-point">Seldom do young students feel more motivated to study science and engineering than when they watch a lunar landing<span class="g-tag">準否定語の文頭倒置: Seldom do S V</span></span>. However, I worry that private space tourism for billionaires is wasting fuel without contributing to public science.
+            </div>
+          </div>
+
+          <h4 class="font-bold text-lg mb-3 border-b pb-1">Source A</h4>
+          <p class="passage-text text-sm">
+            An economic impact report by the International Science Council analyzed government spending on space research over a 20-year period. First, the report noted that space budgets account for less than 0.5% of total national expenditures—<span class="g-point">a fraction so small that cutting it would not solve global poverty<span class="g-tag">程度構文: so + 形容詞 + that ~</span></span>. Second, every $1 invested in space R&amp;D was found <span class="g-point">to have generated an average of $3.50 in economic value<span class="g-tag">完了不定詞: to have Vpp</span></span> through commercial "spin-off" technologies, including drought-resistant crop monitoring via satellite and hospital diagnostic sensors.
+          </p>
+
+          <h4 class="font-bold text-lg mb-3 border-b pb-1">Source B</h4>
+          <p class="passage-text text-sm mb-2">A global survey of 3,000 citizens asked: "Which space-related activity do you think deserves the highest government funding priority?"</p>
+          
+          <div class="border border-slate-300 rounded-xl p-4 bg-white mt-4">
+            <svg viewBox="0 0 380 155" class="w-full h-auto font-sans">
+              <text x="190" y="18" font-size="11" text-anchor="middle" font-weight="bold">Public Priority for Space Funding (%)</text>
+              
+              <!-- Climate & Disaster Monitoring Satellites 54% -->
+              <text x="165" y="52" font-size="9.5" text-anchor="end" fill="#334155">Climate &amp; disaster satellites</text>
+              <rect x="172" y="42" width="135" height="15" fill="#3b82f6" rx="2"/>
+              <text x="312" y="53" font-size="9" fill="#1e40af" font-weight="bold">54%</text>
+
+              <!-- Medical & Clean-Energy Tech R&D in Space 28% -->
+              <text x="165" y="77" font-size="9.5" text-anchor="end" fill="#334155">Medical &amp; clean-energy R&amp;D</text>
+              <rect x="172" y="67" width="70" height="15" fill="#10b981" rx="2"/>
+              <text x="247" y="78" font-size="9" fill="#047857" font-weight="bold">28%</text>
+
+              <!-- Deep-Space Telescopes & Mars Rovers 13% -->
+              <text x="165" y="102" font-size="9.5" text-anchor="end" fill="#334155">Deep-space &amp; Mars missions</text>
+              <rect x="172" y="92" width="32" height="15" fill="#f59e0b" rx="2"/>
+              <text x="209" y="103" font-size="9" fill="#b45309" font-weight="bold">13%</text>
+
+              <!-- Commercial Space Tourism 5% -->
+              <text x="165" y="127" font-size="9.5" text-anchor="end" fill="#334155">Commercial space tourism</text>
+              <rect x="172" y="117" width="12" height="15" fill="#ef4444" rx="2"/>
+              <text x="189" y="128" font-size="9" fill="#b91c1c" font-weight="bold">5%</text>
+              
+              <line x1="172" y1="32" x2="172" y2="140" stroke="#cbd5e1" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="flex-1 lg:w-1/2 space-y-6">
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q8-1">
+            <p class="font-bold mb-3 text-lg">問1 Which of the following best summarizes Marcus's opinion?</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-1" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① Governments ought to prioritize basic human needs on Earth over expensive planetary missions.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-1" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② Mars rovers have already discovered abundant clean water that can be brought to Earth.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-1" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ Private billionaires should pay higher taxes whenever they launch climate satellites.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-1" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ Space exploration is the fastest way to cure diseases in developing countries.</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q8-2">
+            <p class="font-bold mb-3 text-lg">問2 Both Prof. Koyama and Lucas express concerns about _____.</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-2" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① the negative or wasteful impacts of certain types of rocket launches</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-2" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② high school students losing interest in science and engineering</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-2" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ portable ultrasound scanners being too expensive for hospitals</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-2" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ Earth-observing satellites failing to predict typhoons accurately</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q8-3">
+            <p class="font-bold mb-3 text-lg">問3 Position: Investing in space exploration directly benefits life and sustainability on Earth.<br><br>【 40 】 and 【 41 】 support this position the most.<br>An idea shared by these two people is that 【 42 】.</p>
+            <p class="text-sm text-gray-500 mb-2">Options for [40] &amp; [41] (Choose two): ① Dr. Vance, ② Marcus, ③ Elena, ④ Prof. Koyama, ⑤ Lucas</p>
+            <div class="flex flex-wrap gap-4 mb-4 font-sans">
+              <label class="flex items-center cursor-pointer"><input type="checkbox" name="q8-3" value="1" class="mr-2">①</label>
+              <label class="flex items-center cursor-pointer"><input type="checkbox" name="q8-3" value="2" class="mr-2">②</label>
+              <label class="flex items-center cursor-pointer"><input type="checkbox" name="q8-3" value="3" class="mr-2">③</label>
+              <label class="flex items-center cursor-pointer"><input type="checkbox" name="q8-3" value="4" class="mr-2">④</label>
+              <label class="flex items-center cursor-pointer"><input type="checkbox" name="q8-3" value="5" class="mr-2">⑤</label>
+            </div>
+            <p class="text-sm text-gray-500 mb-2">Options for [42] (Choose one):</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-start p-2 border rounded hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-3-2" value="1" class="mt-1 mr-3 w-4 h-4 text-blue-600"><span>① technologies developed for space play a vital role in protecting human lives and the environment on Earth</span></label>
+              <label class="flex items-start p-2 border rounded hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-3-2" value="2" class="mt-1 mr-3 w-4 h-4 text-blue-600"><span>② humans must abandon Earth and relocate to Mars within the next fifty years</span></label>
+              <label class="flex items-start p-2 border rounded hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-3-2" value="3" class="mt-1 mr-3 w-4 h-4 text-blue-600"><span>③ all government welfare budgets should be transferred to space tourism</span></label>
+              <label class="flex items-start p-2 border rounded hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-3-2" value="4" class="mt-1 mr-3 w-4 h-4 text-blue-600"><span>④ rocket launches clean black carbon soot out of the stratosphere</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q8-4">
+            <p class="font-bold mb-3 text-lg">問4 How does Source A counter Marcus's argument while supporting Dr. Vance and Elena?</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-4" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① It shows that space spending is a tiny fraction of national budgets and generates $3.50 in practical Earth benefits per $1 invested.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-4" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② It proves that space budgets consume over 50% of total national expenditures.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-4" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ It demonstrates that Mars rovers are more profitable than hospital diagnostic sensors.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-4" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ It confirms that cutting space budgets would immediately eliminate global poverty.</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 question-block" data-qid="q8-5">
+            <p class="font-bold mb-3 text-lg">問5 Combining the opinions in Step 1 with the survey data in Source B, which statement is accurate?</p>
+            <div class="space-y-2 font-sans text-md">
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-5" value="1" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>① Over 80% of surveyed citizens prioritize space activities that directly benefit Earth (climate satellites and medical/clean-energy R&amp;D), aligning with Dr. Vance and Elena.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-5" value="2" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>② Commercial space tourism, which Lucas criticized, is supported by 54% of surveyed citizens.</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-5" value="3" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>③ More citizens prioritize Mars missions (13%) than medical and clean-energy R&amp;D (28%).</span></label>
+              <label class="flex items-start p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"><input type="radio" name="q8-5" value="4" class="mt-1 mr-3 w-5 h-5 text-blue-600"><span>④ Climate and disaster satellites received the lowest support among all four categories.</span></label>
+            </div>
+            <div class="explanation hidden font-sans mt-4"></div>
+          </div>
+
+          <div class="pt-4 flex justify-center"><button onclick="gradeSection(8)" class="grade-btn bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-10 rounded-full shadow-lg transition-transform active:scale-95 text-lg">採点する</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 総合結果 ==================== -->
+    <section id="tab9" class="tab-content hidden fade-in">
+      <div class="max-w-4xl mx-auto bg-white p-8 rounded-3xl shadow-md border border-gray-200">
+        <h2 class="text-3xl font-bold text-center mb-8 text-slate-800 border-b-2 pb-4">総合採点結果（トライアル 2）</h2>
+        
+        <div id="uncompleted-warning" class="hidden bg-amber-50 border-l-4 border-amber-500 p-4 mb-8 rounded-r-xl font-sans">
+          <p class="text-amber-900 font-bold mb-1">⏱ 途中経過モード（未採点の大問があります）</p>
+          <p class="text-amber-800 text-sm">現在採点済みの大問のみ集計しています。50分授業で途中まで解いた場合は、右上の「💾 途中保存 / 再開」から進捗を保存して次回の授業で続きから再開できます。</p>
+        </div>
+
+        <div id="results-content">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div class="space-y-4">
+              <h3 class="text-xl font-bold text-slate-700 mb-4 border-b pb-2">大問ごとの得点</h3>
+              <div class="flex justify-between items-center bg-slate-50 p-3 rounded border">
+                <span class="font-bold text-slate-600">第1問（案内・チャット：仮定法Should・提案要求）</span>
+                <span class="text-lg font-bold"><span id="score-q1" class="text-blue-600">未採点</span> <span class="text-sm text-slate-500">/ 6 点</span></span>
+              </div>
+              <div class="flex justify-between items-center bg-slate-50 p-3 rounded border">
+                <span class="font-bold text-slate-600">第2問（評価レポート：Fact/Opinion・But for・Not until倒置）</span>
+                <span class="text-lg font-bold"><span id="score-q2" class="text-blue-600">未採点</span> <span class="text-sm text-slate-500">/ 12 点</span></span>
+              </div>
+              <div class="flex justify-between items-center bg-slate-50 p-3 rounded border">
+                <span class="font-bold text-slate-600">第3問（ブログ物語：大過去トラップ・Scarcely倒置）</span>
+                <span class="text-lg font-bold"><span id="score-q3" class="text-blue-600">未採点</span> <span class="text-sm text-slate-500">/ 9 点</span></span>
+              </div>
+              <div class="flex justify-between items-center bg-slate-50 p-3 rounded border">
+                <span class="font-bold text-slate-600">第4問（記事推敲・図表：クジラ構文・文挿入・論理接続詞）</span>
+                <span class="text-lg font-bold"><span id="score-q4" class="text-blue-600">未採点</span> <span class="text-sm text-slate-500">/ 12 点</span></span>
+              </div>
+              <div class="flex justify-between items-center bg-slate-50 p-3 rounded border">
+                <span class="font-bold text-slate-600">第5問（長文物語：譲歩倒置・need not have Vpp）</span>
+                <span class="text-lg font-bold"><span id="score-q5" class="text-blue-600">未採点</span> <span class="text-sm text-slate-500">/ 16 点</span></span>
+              </div>
+              <div class="flex justify-between items-center bg-slate-50 p-3 rounded border">
+                <span class="font-bold text-slate-600">第6問（心理学プレゼン：複合関係副詞・比例比較）</span>
+                <span class="text-lg font-bold"><span id="score-q6" class="text-blue-600">未採点</span> <span class="text-sm text-slate-500">/ 12 点</span></span>
+              </div>
+              <div class="flex justify-between items-center bg-slate-50 p-3 rounded border">
+                <span class="font-bold text-slate-600">第7問（バイオミミクリー：分詞構文・代名詞that・whose）</span>
+                <span class="text-lg font-bold"><span id="score-q7" class="text-blue-600">未採点</span> <span class="text-sm text-slate-500">/ 16 点</span></span>
+              </div>
+              <div class="flex justify-between items-center bg-slate-50 p-3 rounded border">
+                <span class="font-bold text-slate-600">第8問（複数資料統合：複合関係形容詞・完了不定詞）</span>
+                <span class="text-lg font-bold"><span id="score-q8" class="text-blue-600">未採点</span> <span class="text-sm text-slate-500">/ 17 点</span></span>
+              </div>
+            </div>
+            
+            <div class="flex flex-col items-center justify-center bg-blue-50 rounded-2xl border-2 border-blue-200 p-8 shadow-inner">
+              <p class="text-lg font-bold text-slate-600 mb-2">現在の獲得スコア</p>
+              <div class="text-6xl font-black text-blue-700 mb-4">
+                <span id="score-total">0</span><span class="text-2xl text-slate-500 font-bold ml-2">/ 100</span>
+              </div>
+              <p class="text-xl font-bold text-slate-700 bg-white px-6 py-2 rounded-full border border-blue-200 shadow-sm">得点率: <span id="score-percentage" class="text-blue-600">0</span>%</p>
+              <p id="score-progress-detail" class="mt-3 text-xs font-sans text-slate-500 font-bold">採点済み: 0 / 8 大問</p>
+              <p id="score-message" class="mt-6 text-lg font-bold text-center text-slate-700"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-4 text-center font-sans">
+          <button onclick="calculateTotal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 px-10 rounded-full shadow-lg transition-transform active:scale-95 text-lg">成績表を更新する</button>
+          <button onclick="openSaveModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-8 rounded-full shadow-lg transition-transform active:scale-95 text-lg">💾 途中経過を保存する</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== 途中保存 / 再開モーダル ==================== -->
+  <div id="saveModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4 font-sans">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-6 border border-slate-200 fade-in max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b pb-3 mb-4">
+        <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">💾 途中保存・続きから再開（トライアル 2）</h3>
+        <button onclick="closeSaveModal()" class="text-slate-400 hover:text-slate-700 text-2xl font-bold leading-none px-2">&times;</button>
+      </div>
+
+      <!-- 現在の解答状況サマリー -->
+      <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 mb-5 text-sm">
+        <div class="flex justify-between items-center mb-1">
+          <span class="font-bold text-slate-700">現在の解答状況</span>
+          <span id="modalProgressSummary" class="text-blue-600 font-bold">回答済み: 0 / 31 問</span>
+        </div>
+        <div id="modalSectionPills" class="flex flex-wrap gap-1.5 mt-2"></div>
+      </div>
+
+      <!-- 方法1: 出席番号・合言葉でクラウド保存＆再開 -->
+      <div class="border border-emerald-200 bg-emerald-50/60 rounded-xl p-4 mb-5">
+        <h4 class="font-bold text-emerald-950 text-sm mb-1">☁️ 方法1：出席番号や合言葉で保存・再開（推奨）</h4>
+        <p class="text-xs text-emerald-800 mb-3">自分の「出席番号＋名前（例：201-sato）」などの合言葉を入力すると、次回の授業で同じ合言葉を入れるだけでどの端末からでも続きから再開できます。</p>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input id="cloudSaveKeyInput" type="text" placeholder="例: 2年1組15番 / taro02" class="flex-1 border border-emerald-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+          <button onclick="saveByPassphrase()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-lg text-sm shadow-sm transition-colors whitespace-nowrap">この合言葉で保存</button>
+          <button onclick="loadByPassphrase()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-4 py-2 rounded-lg text-sm shadow-sm transition-colors whitespace-nowrap">合言葉で復元</button>
+        </div>
+      </div>
+
+      <!-- 方法2: セーブコードのコピー＆貼り付け -->
+      <div class="border border-slate-200 bg-white rounded-xl p-4 mb-5">
+        <h4 class="font-bold text-slate-800 text-sm mb-1">📋 方法2：セーブコード（文字列）で保存・再開</h4>
+        <p class="text-xs text-slate-600 mb-2">下のセーブコードをコピーしてGoogleドキュメントやメモ帳に貼り付けておくと、次回そのコードを貼り付けるだけで確実に復元できます。</p>
+        <div class="flex gap-2 mb-3">
+          <input id="saveCodeOutput" type="text" readonly class="flex-1 bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-xs font-mono text-slate-700 select-all" placeholder="ここにセーブコードが生成されます">
+          <button onclick="copySaveCode()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-lg text-xs shadow-sm transition-colors whitespace-nowrap">コードをコピー</button>
+        </div>
+        <div class="flex gap-2">
+          <input id="saveCodeInput" type="text" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-xs font-mono" placeholder="保存しておいたセーブコードをここに貼り付け">
+          <button onclick="restoreFromSaveCodeInput()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-2 rounded-lg text-xs shadow-sm transition-colors whitespace-nowrap">コードから再開</button>
+        </div>
+      </div>
+
+      <div id="modalFeedbackMsg" class="hidden p-3 rounded-lg text-sm font-bold mb-4 text-center"></div>
+
+      <div class="flex justify-between items-center pt-2 border-t border-slate-200">
+        <button onclick="resetAllProgress()" class="text-xs text-red-600 hover:text-red-800 font-bold underline">解答をすべてリセット</button>
+        <button onclick="closeSaveModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-6 py-2 rounded-lg text-sm transition-colors">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- トースト通知 -->
+  <div id="toastBanner" class="fixed bottom-5 right-5 z-50 hidden bg-slate-900 text-white font-sans text-sm font-bold px-5 py-3 rounded-xl shadow-xl border border-slate-700 fade-in"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // === Firebase初期化 ===
+    let db = null;
+    let auth = null;
+    let currentUser = null;
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'kyotsu-test-trial-2';
+    const EXAM_DOC_KEY = 'trial_2';
+
+    async function initCloudStorage() {
+      try {
+        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+          const firebaseConfig = JSON.parse(__firebase_config);
+          const app = initializeApp(firebaseConfig);
+          db = getFirestore(app);
+          auth = getAuth(app);
+
+          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            await signInWithCustomToken(auth, __initial_auth_token);
+          } else {
+            await signInAnonymously(auth);
+          }
+
+          onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            if (currentUser) {
+              await autoRestoreFromUserCloud();
+            }
+          });
+        } else {
+          updateSaveStatusBadge('セーブコード保存対応', 'bg-blue-400');
+        }
+      } catch (err) {
+        console.warn('Cloud init fallback:', err);
+        updateSaveStatusBadge('セーブコード保存対応', 'bg-blue-400');
+      }
+    }
+
+    function updateSaveStatusBadge(text, dotColorClass) {
+      const textEl = document.getElementById('saveStatusText');
+      const dotEl = document.getElementById('saveStatusDot');
+      if (textEl) textEl.innerText = text;
+      if (dotEl) dotEl.className = `w-2 h-2 rounded-full ${dotColorClass}`;
+    }
+
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toastBanner');
+      if (!toast) return;
+      toast.innerText = message;
+      toast.className = `fixed bottom-5 right-5 z-50 font-sans text-sm font-bold px-5 py-3 rounded-xl shadow-xl border fade-in ${
+        isError ? 'bg-red-700 text-white border-red-500' : 'bg-slate-900 text-white border-slate-700'
+      }`;
+      toast.classList.remove('hidden');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3500);
+    }
+
+    function showModalFeedback(message, isError = false) {
+      const el = document.getElementById('modalFeedbackMsg');
+      if (!el) return;
+      el.innerText = message;
+      el.className = `p-3 rounded-lg text-sm font-bold mb-4 text-center ${
+        isError ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+      }`;
+      el.classList.remove('hidden');
+    }
+
+    // === 文法ハイライト切替 ===
+    let grammarHighlightOn = false;
+    let currentActiveTab = 1;
+
+    function toggleGrammarHighlight() {
+      grammarHighlightOn = !grammarHighlightOn;
+      document.body.classList.toggle('show-grammar', grammarHighlightOn);
+      const btn = document.getElementById('grammarToggleBtn');
+      if (grammarHighlightOn) {
+        btn.innerHTML = '<span>🔍 文法・構文ハイライト: ON</span>';
+        btn.className = 'font-sans text-xs md:text-sm bg-amber-300 hover:bg-amber-200 text-slate-950 font-bold px-3 py-1.5 rounded-lg shadow-md ring-2 ring-white transition-all flex items-center gap-1.5';
+      } else {
+        btn.innerHTML = '<span>🔍 文法・構文ハイライト: OFF</span>';
+        btn.className = 'font-sans text-xs md:text-sm bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3 py-1.5 rounded-lg shadow transition-all flex items-center gap-1.5';
+      }
+    }
+
+    // === 採点データとロジック ===
+    const answers = {
+      'q1-1': '2', 'q1-2': '1', 'q1-3': '2',
+      'q2-1': '3', 'q2-2': '2', 'q2-3': '2', 'q2-4': '2',
+      'q3-1': 'CDAB', 'q3-2': '1', 'q3-3': '2',
+      'q4-1': '1', 'q4-2': '2', 'q4-3': '3', 'q4-4': '1',
+      'q5-1': '2', 'q5-2': '1', 'q5-3': '2', 'q5-4': '1', 
+      'q6-1': '2', 'q6-2': '2', 'q6-3': '2', 'q6-4': '2',
+      'q7-1': '2', 'q7-2': '2', 'q7-3': '1', 'q7-4': '1',
+      'q8-1': '1', 'q8-2': '1', 'q8-3': ['1', '3', '1'], 'q8-4': '1', 'q8-5': '1'
+    };
+
+    const explanations = {
+      'q1-1': '<strong>【読解＆文法解説】</strong> 案内文の「<strong>Should strong winds occur</strong> in the afternoon, the 2:00 PM session will be replaced with an indoor mangrove workshop（仮定法未来の倒置：万が一午後に強風が吹いた場合、午後2時の回は屋内のワークショップに変更される）」と、Hanaの「the wind <strong>is bound to</strong> pick up... We <strong>might as well</strong> book the 9:00 AM session <strong>rather than</strong> risk...（屋内講義になるリスクを冒すくらいなら午前9時の回を予約した方がよい）」から、②が正解です。',
+      'q1-2': '<strong>【読解＆文法解説】</strong> 安全ガイドラインに「Our head guide <strong>urges that</strong> every participant <strong>wear</strong> water shoes... <strong>for fear that</strong> sharp river shells <strong>might injure</strong> bare feet（要求・提案の動詞 urge + that S (should) 原形、および目的否定 for fear that S might V「鋭い川の貝殻が素足を傷つけないように」）」とあります。よって①が正解です。',
+      'q1-3': '<strong>【読解＆文法解説】</strong> "You" の発言「We <strong>had better</strong> stop by the sports outlet near the station tomorrow afternoon to buy proper water shoes」と、Noahの「I <strong>cannot</strong> read that safety notice <strong>without</strong> feeling grateful...（二重否定：その注意書きを読めば必ず感謝せずにはいられない）Let\'s meet at the sports outlet tomorrow at 4:00 PM!」から、②が正解です。',
+      'q2-1': '<strong>【読解＆文法解説】</strong> <strong>【Level 3: Fact vs Opinion】</strong> レポート前半の「demonstrate that daily student visits have risen by 32%」は客観的データ（Fact）ですが、後半の「<strong>we consider that</strong> the current closing time of 11:00 PM is <strong>reasonable</strong> enough to balance...（午後11時の閉館時間は学習ニーズと安全のバランスをとるのに十分妥当だと我々は考える）」は思考動詞 consider と形容詞 reasonable を伴う主観的意見（Opinion）です。よって③が正解です。',
+      'q2-2': '<strong>【読解＆文法解説】</strong> Liamのコメントにある「<strong>But for</strong> these private booths, I <strong>could never have attended</strong> my internship interview without background noise（仮定法過去完了：もしこれらの個室ブースがなかったら、周囲の雑音なしでインターンの面接を受けることは決してできなかっただろう）」から、個室ブースのおかげで静かな環境で面接を受けられた（②）が正解です。',
+      'q2-3': '<strong>【読解＆文法解説】</strong> Mayaのコメント冒頭「<strong>Nothing is more inspiring</strong> for group projects <strong>than</strong> the movable whiteboards（原級・比較級を用いた最上級表現：グループ課題にとって可動式ホワイトボードほど刺激的で役立つものはない）」から、②が正解です。',
+      'q2-4': '<strong>【読解＆文法解説】</strong> Liamは「<strong>with selfish students leaving</strong> their textbooks on desks for hours（付帯状況のwith構文）」、Mayaは「many seats <strong>remain unoccupied</strong> simply because people hog them with bags」、Tobyは「<strong>not until</strong> library staff strictly enforce the 20-minute absence rule <strong>will</strong> the seat-hogging problem disappear（Not until ~ の文頭倒置）」と述べており、3人とも「荷物や教科書を置いて長時間席を占有する（場所取り）問題」（②）を指摘しています。',
+      'q3-1': '<strong>【読解＆文法解説】</strong> <strong>【Level 1: 大過去トラップ】</strong> 文章の登場順（Reading Order）は「山頂でシャッターを押す → 前夜に自宅でセンサーを掃除した際にアダプターを机に忘れたことに気づく（<strong>had left / had cleaned</strong>：これが最古の出来事C！） → 登山直前にガソリンスタンドで友人に自慢していた（<strong>had boasted</strong>：2番目のD） → 山頂で老カメラマンに手動ピントを教わる（A） → 昨日、文化祭でグランプリを受賞した（B）」となります。実際の時間軸（Chronological Order）は <strong>C → D → A → B</strong> です。',
+      'q3-2': '<strong>【読解＆文法解説】</strong> <strong>【Level 2: 分詞構文の骨格抽出】</strong> 第2段落の「<strong>Shining</strong> a dim red flashlight onto my lens barrel, <strong>the old man showed</strong> me how to align..., <strong>explaining that</strong> red light preserves human night vision（前後の -ing を整理すると、赤色ライトは人間の暗順応［夜間視力］を保つためだと説明している）」から、①が正解です。',
+      'q3-3': '<strong>【読解＆文法解説】</strong> 最終段落の強調構文「<strong>It was</strong> that manually focused photograph <strong>that</strong> won the Grand Prize!」および「I understood <strong>what the old man had meant</strong>: mastering basic manual skills is far more reliable than depending blindly on automatic gadgets」から、②が正解です。',
+      'q4-1': '<strong>【読解＆文法解説】</strong> グラフで「Before (140g)」から「Posters Only (130g)」へと10gしか減らなかったこと、さらに第1段落のクジラ構文「a mere appeal to morality <strong>can no more</strong> solve structural overconsumption <strong>than</strong> a bandage can cure a broken bone（絆創膏が骨折を治せないのと同様に、単なる道徳心への訴えかけでは構造的な過剰消費を解決できない）」から、①が正解です。',
+      'q4-2': '<strong>【読解＆文法解説】</strong> <strong>【Level 4: 文章推敲・文挿入】</strong> 挿入文の冒頭にある指示語「<strong>This simple physical limit</strong>（この単純な物理的制限）」は、直前の文「Instead, students carry only the plates and bowls they can hold in their two hands（代わりに、学生は両手で持てるだけの皿と鉢しか運ばない）」を指しています。さらに「Second, at the rice counter...」の前に置くことで論理が滑らかにつながるため、<strong>② &lt; B &gt;</strong> が正解です。',
+      'q4-3': '<strong>【読解＆文法解説】</strong> <strong>【Level 4: 論理接続詞】</strong> 第2段落で「トレイ廃止＋小盛り割引クーポンの導入」という施策を説明し、第3段落で「1人あたりの廃棄量が1日65gへと半減した」という<strong>結果</strong>を述べています。したがって因果関係（その結果）を表す <strong>③ Consequently</strong> が最適です。',
+      'q4-4': '<strong>【読解＆文法解説】</strong> アドバイザーのComment (2)は「第3段落で言及された食品廃棄の削減（半分以下）と資源節約（毎日400リットルの温水節約）の両方を要約するように下線部を書き換えよ」と求めています。したがって両方を正確にまとめた①が正解です。',
+      'q5-1': '<strong>【読解＆文法解説】</strong> 最初は祖父の技術を丸写ししようとプレッシャーを感じていたHarutoのもとに、[30] ギタリストのMs. Rinaが40年前のひび割れたギターを持ち込み（A）、[31] 修理のために裏板を開けた際、祖父が内部に鉛筆で書き残したメッセージを発見する（C：<strong>little did he dream that he would find...</strong>）という流れです。よって②が正解です。',
+      'q5-2': '<strong>【読解＆文法解説】</strong> 第5段落の「He realized that he <strong>need not have feared</strong> expressing his own craftsmanship（助動詞＋完了形 need not have Vpp：自分の職人技を表現することを恐れる必要はなかったのだと気づいた）」から、①が正解です。',
+      'q5-3': '<strong>【読解＆文法解説】</strong> 第4段落の祖父のメモ「No two trees grow in the same wind. Do not copy my past—carve the wood according to the voice it wants to sing today（同じ風の中で育つ木は2つとない。私の過去を模倣するな—その木が今日歌いたがっている声に合わせて木を削れ）」から、②が正解です。',
+      'q5-4': '<strong>【読解＆文法解説】</strong> 最終段落の「honoring a tradition means <strong>helping it evolve, not freezing it in time</strong>（伝統を敬うとは、それを時間の中に凍結させることではなく、進化させることだ）」から、①が正解です。',
+      'q6-1': '<strong>【読解＆文法解説】</strong> 第1段落末の「<strong>Far from being passive</strong>, the brain during mind-wandering is actively <strong>connecting distant memories and imagining future scenarios</strong>（受動的であるどころか、マインドワンダリング中の脳は遠い記憶を結びつけ、未来のシナリオを想像している）」から、②が正解です。',
+      'q6-2': '<strong>【読解＆文法解説】</strong> 第2段落の比例比較構文「<strong>the more relaxed and undemanding</strong> your physical activity is, <strong>the more likely</strong> the DMN is to <strong>link seemingly unrelated concepts into an original solution</strong>（身体活動がリラックスして負荷が少ないほど、DMNは一見無関係に見える概念を結びつけて独創的な解決策を生み出しやすくなる）」から、②が正解です。',
+      'q6-3': '<strong>【読解＆文法解説】</strong> 第3段落末の「<strong>Bombarding the brain</strong> with constant notifications and short videos <strong>forces</strong> our attention outward, <strong>depriving the DMN of the quiet downtime</strong> it needs to consolidate memories（絶え間ない通知やショート動画で脳を攻撃することは注意を外に向けさせ、DMNが記憶を定着させるのに必要な静かな休息時間を奪ってしまう）」から、②が正解です。',
+      'q6-4': '<strong>【読解＆文法解説】</strong> 第4段落の「neuroscientists recommend scheduling "<strong>low-effort, screen-free intervals</strong>"... Activities such as gardening, jogging along a familiar path, or washing dishes by hand... <strong>while leaving your inner mind free to roam</strong>」から、②が正解です。',
+      'q7-1': '<strong>【読解＆文法解説】</strong> <strong>【Level 2: 分詞構文の骨格抽出】</strong> 第1段落の「<strong>Observing</strong> how kingfishers dive..., <strong>Japanese engineers redesigned</strong> the nose cone..., <strong>eliminating</strong> thunderous tunnel boom <strong>while cutting electricity consumption by 15%</strong>」から、トンネル微気圧波（衝撃音）をなくしつつ電力消費を15%削減した（②）が正解です。',
+      'q7-2': '<strong>【読解＆文法解説】</strong> 第2段落の「the Eastgate Centre uses concrete chimneys and fans to draw in cool night air, <strong>storing the coolness in the building\'s heavy stone floors</strong> to absorb heat the following afternoon」から、②が正解です。また直後の「less than 10% of <strong>that</strong> of a conventional building」の that は the energy を指す重要代名詞構文です。',
+      'q7-3': '<strong>【読解＆文法解説】</strong> 第3段落の所有格関係代名詞 whose と仮定法未来の倒置「<strong>Were arid coastal cities to coat</strong> building roofs with synthetic films mimicking this beetle\'s shell, they <strong>could harvest</strong> thousands of liters of clean drinking water directly from morning fog」から、①が正解です。',
+      'q7-4': '<strong>【読解＆文法解説】</strong> 第4段落の「<strong>the extent to which</strong> biomimicry can be commercialized depends on <strong>bridging the gap between biologists and industrial designers</strong>. All too often, valuable biological research remains locked in academic journals that <strong>engineers</strong> rarely read」から、①が正解です。',
+      'q8-1': '<strong>【読解＆文法解説】</strong> Marcusは複合関係形容詞「<strong>Whatever scientific discoveries</strong> space missions may yield（宇宙ミッションがどんな科学的発見をもたらそうとも）」を使いつつ、地球上で清潔な水や医療を欠く人々がいる中で火星探査機に何十億ドルも費やすのは道徳的に擁護できず、地球上の苦しみを先に解決すべきだ（①）と主張しています。',
+      'q8-2': '<strong>【読解＆文法解説】</strong> Prof. Koyamaは「大型ロケットの打ち上げが成層圏に黒色炭素（すす）を放出しオゾン層破壊を加速させる（環境負荷）」と懸念し、Lucasは後半で「億万長者のための民間宇宙旅行が公共の科学に貢献せず燃料を浪費している」と懸念しています。両者とも「特定のロケット打ち上げがもたらす悪影響や浪費（①）」に懸念を示しています。',
+      'q8-3': '<strong>【読解＆文法解説】</strong> 「宇宙開発への投資は地球上の生命と持続可能性に直接貢献する」という立場を最も支持しているのは、地球観測衛星による気候変動追跡や台風予測を挙げた <strong>① Dr. Vance</strong>（`It is imperative that...` / `Were it not for...`）と、宇宙開発から生まれた浄水フィルターや携帯型超音波診断装置、高効率太陽電池を挙げた <strong>③ Elena</strong> です。2人に共通する考えは①「宇宙向けに開発された技術は、地球上の人々の命と環境を守る上で不可欠な役割を果たしている」です。',
+      'q8-4': '<strong>【読解＆文法解説】</strong> Source Aでは「宇宙予算は国家歳出全体の0.5%未満という極めて小さな割合であり（<strong>so small that cutting it would not solve global poverty</strong>：Marcusへの反論）、宇宙研究開発に投資された1ドルあたり平均3.50ドルの経済価値がスピンオフ技術を通じて生み出されたことが判明した（<strong>was found to have generated</strong>：完了不定詞、Dr. VanceとElenaの支持）」と述べられています。よって①が正解です。',
+      'q8-5': '<strong>【読解＆文法解説】</strong> Source Bのグラフを見ると、市民が最優先すべきと考える宇宙予算の使い道は「気候・災害監視衛星（54%）」と「医療・クリーンエネルギー技術の研究開発（28%）」であり、合計すると <strong>82%（80%以上）</strong> の市民が地球に直接還元される宇宙活動を支持しています。これはDr. VanceとElenaの主張と完全に一致するため、①が正解です。'
+    };
+
+    const pointWeights = {
+      'q1-1': 2, 'q1-2': 2, 'q1-3': 2,                      // 計6点
+      'q2-1': 3, 'q2-2': 3, 'q2-3': 3, 'q2-4': 3,           // 計12点
+      'q3-1': 3, 'q3-2': 3, 'q3-3': 3,                      // 計9点
+      'q4-1': 3, 'q4-2': 3, 'q4-3': 3, 'q4-4': 3,           // 計12点
+      'q5-1': 4, 'q5-2': 4, 'q5-3': 4, 'q5-4': 4,           // 計16点
+      'q6-1': 3, 'q6-2': 3, 'q6-3': 3, 'q6-4': 3,           // 計12点
+      'q7-1': 4, 'q7-2': 4, 'q7-3': 4, 'q7-4': 4,           // 計16点
+      'q8-1': 3, 'q8-2': 3, 'q8-3': 5, 'q8-4': 3, 'q8-5': 3  // 計17点 (合計100点)
+    };
+
+    const maxScores = {
+      1: 6, 2: 12, 3: 9, 4: 12, 5: 16, 6: 12, 7: 16, 8: 17
+    };
+
+    let userScores = {};
+
+    // === 現在の解答状態・採点状態の収集と復元 ===
+    function collectCurrentState() {
+      const inputsState = {};
+      document.querySelectorAll('input[type="radio"]:checked').forEach(r => {
+        inputsState[`radio:${r.name}`] = r.value;
+      });
+      const checkGroups = {};
+      document.querySelectorAll('input[type="checkbox"]:checked').forEach(c => {
+        if (!checkGroups[c.name]) checkGroups[c.name] = [];
+        checkGroups[c.name].push(c.value);
+      });
+      Object.keys(checkGroups).forEach(name => {
+        inputsState[`check:${name}`] = checkGroups[name];
+      });
+      document.querySelectorAll('.question-block').forEach(qBlock => {
+        const selects = qBlock.querySelectorAll('.order-select');
+        if (selects.length > 0) {
+          const qId = qBlock.getAttribute('data-qid');
+          inputsState[`select:${qId}`] = Array.from(selects).map(s => s.value);
+        }
+      });
+
+      return {
+        v: 2,
+        exam: EXAM_DOC_KEY,
+        tab: currentActiveTab,
+        inputs: inputsState,
+        gradedTabs: Object.keys(userScores).map(Number),
+        updatedAt: Date.now()
+      };
+    }
+
+    function applySavedState(state, silent = false) {
+      if (!state || typeof state !== 'object') return false;
+
+      clearAllInputsDOM();
+
+      const inputsState = state.inputs || {};
+      Object.keys(inputsState).forEach(key => {
+        const val = inputsState[key];
+        if (key.startsWith('radio:')) {
+          const name = key.slice(6);
+          const radio = document.querySelector(`input[type="radio"][name="${name}"][value="${val}"]`);
+          if (radio) radio.checked = true;
+        } else if (key.startsWith('check:')) {
+          const name = key.slice(6);
+          if (Array.isArray(val)) {
+            val.forEach(v => {
+              const cb = document.querySelector(`input[type="checkbox"][name="${name}"][value="${v}"]`);
+              if (cb) cb.checked = true;
+            });
+          }
+        } else if (key.startsWith('select:')) {
+          const qId = key.slice(7);
+          const qBlock = document.querySelector(`.question-block[data-qid="${qId}"]`);
+          if (qBlock && Array.isArray(val)) {
+            const selects = qBlock.querySelectorAll('.order-select');
+            selects.forEach((s, idx) => {
+              if (val[idx] !== undefined) s.value = val[idx];
+            });
+          }
+        }
+      });
+
+      if (Array.isArray(state.gradedTabs)) {
+        state.gradedTabs.forEach(tabNum => {
+          gradeSection(Number(tabNum), true);
+        });
+      }
+
+      if (state.tab && state.tab >= 1 && state.tab <= 9) {
+        switchTab(Number(state.tab), true);
+      }
+
+      updateReportCard();
+      refreshSaveModalSummary();
+      if (!silent) {
+        showToast('保存されたデータから解答・採点状況を復元しました！');
+      }
+      return true;
+    }
+
+    function clearAllInputsDOM() {
+      userScores = {};
+      document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(el => {
+        el.checked = false;
+        el.disabled = false;
+        if (el.parentElement && el.parentElement.tagName === 'LABEL') {
+          el.parentElement.classList.add('hover:bg-blue-50', 'cursor-pointer');
+        }
+      });
+      document.querySelectorAll('.order-select').forEach(s => {
+        s.value = '';
+        s.disabled = false;
+      });
+      document.querySelectorAll('.explanation').forEach(exp => {
+        exp.classList.add('hidden');
+        exp.innerHTML = '';
+      });
+      document.querySelectorAll('.grade-btn').forEach(btn => {
+        btn.classList.remove('hidden');
+      });
+      document.querySelectorAll('.section-result-summary').forEach(el => el.remove());
+      for (let i = 1; i <= 8; i++) {
+        const navBtn = document.getElementById('nav' + i);
+        if (navBtn) {
+          navBtn.innerText = `第${i}問`;
+        }
+      }
+    }
+
+    // === 自動クラウド保存 ===
+    let autoSaveTimeout = null;
+    function scheduleAutoSave() {
+      refreshSaveCodeOutput();
+      if (!db || !currentUser) return;
+      updateSaveStatusBadge('保存中...', 'bg-amber-400');
+      clearTimeout(autoSaveTimeout);
+      autoSaveTimeout = setTimeout(async () => {
+        if (!currentUser) return;
+        try {
+          const state = collectCurrentState();
+          const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'exam_progress', EXAM_DOC_KEY);
+          await setDoc(docRef, { payload: JSON.stringify(state), updatedAt: Date.now() });
+          updateSaveStatusBadge('自動保存済み', 'bg-emerald-400');
+        } catch (err) {
+          console.warn('Auto-save failed:', err);
+          updateSaveStatusBadge('セーブコード保存可', 'bg-blue-400');
+        }
+      }, 600);
+    }
+
+    async function autoRestoreFromUserCloud() {
+      if (!db || !currentUser) return;
+      try {
+        const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'exam_progress', EXAM_DOC_KEY);
+        const snap = await getDoc(docRef);
+        if (snap.exists() && snap.data().payload) {
+          const state = JSON.parse(snap.data().payload);
+          const hasAnyAnswer = state.inputs && Object.keys(state.inputs).length > 0;
+          if (hasAnyAnswer) {
+            applySavedState(state, true);
+            updateSaveStatusBadge('前回の続きを復元済み', 'bg-emerald-400');
+            showToast('前回の途中経過を自動で読み込みました');
+          }
+        }
+      } catch (err) {
+        console.warn('Auto-restore skipped:', err);
+      }
+    }
+
+    // === 合言葉（出席番号など）によるクラウド保存・復元 ===
+    function normalizePassphrase(raw) {
+      return `trial2_${raw.trim().replace(/[\/\\?#\[\]\s]+/g, '_').toLowerCase()}`;
+    }
+
+    async function saveByPassphrase() {
+      const inputEl = document.getElementById('cloudSaveKeyInput');
+      const rawKey = inputEl ? inputEl.value : '';
+      if (!rawKey || rawKey.trim().length < 2) {
+        showModalFeedback('2文字以上の出席番号や合言葉を入力してください。', true);
+        return;
+      }
+      const cleanKey = normalizePassphrase(rawKey);
+      if (!db || !currentUser) {
+        showModalFeedback('現在オフライン環境のため、下の「方法2：セーブコード」をコピーして保存してください。', true);
+        return;
+      }
+      try {
+        const state = collectCurrentState();
+        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'exam_sessions', cleanKey);
+        await setDoc(docRef, {
+          payload: JSON.stringify(state),
+          updatedAt: Date.now(),
+          ownerUid: currentUser.uid
+        });
+        updateSaveStatusBadge(`保存済 (${rawKey.trim()})`, 'bg-emerald-400');
+        showModalFeedback(`合言葉「${rawKey.trim()}」でクラウドに途中経過を保存しました！次回の授業で同じ合言葉を入力すると再開できます。`, false);
+      } catch (err) {
+        showModalFeedback('クラウド保存に失敗しました。下のセーブコードをコピーして保存してください。', true);
+      }
+    }
+
+    async function loadByPassphrase() {
+      const inputEl = document.getElementById('cloudSaveKeyInput');
+      const rawKey = inputEl ? inputEl.value : '';
+      if (!rawKey || !rawKey.trim()) {
+        showModalFeedback('保存したときの出席番号や合言葉を入力してください。', true);
+        return;
+      }
+      const cleanKey = normalizePassphrase(rawKey);
+      if (!db || !currentUser) {
+        showModalFeedback('現在クラウドに接続できません。セーブコードから復元してください。', true);
+        return;
+      }
+      try {
+        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'exam_sessions', cleanKey);
+        const snap = await getDoc(docRef);
+        if (!snap.exists() || !snap.data().payload) {
+          showModalFeedback(`合言葉「${rawKey.trim()}」のデータが見つかりませんでした。`, true);
+          return;
+        }
+        const state = JSON.parse(snap.data().payload);
+        applySavedState(state, true);
+        showModalFeedback(`合言葉「${rawKey.trim()}」のデータから続きを復元しました！`, false);
+        showToast(`「${rawKey.trim()}」のデータを復元しました`);
+      } catch (err) {
+        showModalFeedback('データの読み込みに失敗しました。', true);
+      }
+    }
+
+    // === セーブコードによる保存・復元 ===
+    function encodeStateToCode(state) {
+      const json = JSON.stringify(state);
+      return btoa(encodeURIComponent(json));
+    }
+
+    function decodeCodeToState(code) {
+      const json = decodeURIComponent(atob(code.trim()));
+      return JSON.parse(json);
+    }
+
+    function refreshSaveCodeOutput() {
+      const outEl = document.getElementById('saveCodeOutput');
+      if (!outEl) return;
+      try {
+        const state = collectCurrentState();
+        outEl.value = encodeStateToCode(state);
+      } catch (e) {
+        outEl.value = '';
+      }
+    }
+
+    function copySaveCode() {
+      refreshSaveCodeOutput();
+      const outEl = document.getElementById('saveCodeOutput');
+      if (!outEl || !outEl.value) return;
+      outEl.select();
+      outEl.setSelectionRange(0, 99999);
+      document.execCommand('copy');
+      showModalFeedback('セーブコードをクリップボードにコピーしました！メモ帳などに貼り付けて保管してください。', false);
+      showToast('📋 セーブコードをコピーしました');
+    }
+
+    function restoreFromSaveCodeInput() {
+      const inEl = document.getElementById('saveCodeInput');
+      if (!inEl || !inEl.value.trim()) {
+        showModalFeedback('セーブコードを貼り付けてからボタンを押してください。', true);
+        return;
+      }
+      try {
+        const state = decodeCodeToState(inEl.value);
+        applySavedState(state, true);
+        showModalFeedback('セーブコードから解答状況と得点を復元しました！', false);
+      } catch (e) {
+        showModalFeedback('セーブコードの形式が正しくありません。全体を正確に貼り付けているか確認してください。', true);
+      }
+    }
+
+    function refreshSaveModalSummary() {
+      refreshSaveCodeOutput();
+      const state = collectCurrentState();
+      const answeredCount = Object.keys(state.inputs || {}).length;
+      const summaryEl = document.getElementById('modalProgressSummary');
+      if (summaryEl) {
+        summaryEl.innerText = `選択済み項目: ${answeredCount} 箇所 / 採点済み: ${Object.keys(userScores).length} / 8 大問`;
+      }
+      const pillsEl = document.getElementById('modalSectionPills');
+      if (pillsEl) {
+        pillsEl.innerHTML = '';
+        for (let i = 1; i <= 8; i++) {
+          const isGraded = userScores[i] !== undefined;
+          const pill = document.createElement('span');
+          pill.className = `px-2.5 py-1 rounded-full text-xs font-bold ${
+            isGraded
+              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+              : 'bg-slate-200 text-slate-600'
+          }`;
+          pill.innerText = isGraded ? `第${i}問: ${userScores[i]}/${maxScores[i]}点` : `第${i}問: 未採点`;
+          pillsEl.appendChild(pill);
+        }
+      }
+    }
+
+    function openSaveModal() {
+      const modal = document.getElementById('saveModal');
+      const feedback = document.getElementById('modalFeedbackMsg');
+      if (feedback) feedback.classList.add('hidden');
+      refreshSaveModalSummary();
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeSaveModal() {
+      const modal = document.getElementById('saveModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function resetAllProgress() {
+      clearAllInputsDOM();
+      updateReportCard();
+      refreshSaveModalSummary();
+      scheduleAutoSave();
+      showModalFeedback('すべての解答と採点結果をリセットしました。', false);
+      showToast('解答をリセットしました');
+    }
+
+    function switchTab(tabNum, skipSave = false) {
+      currentActiveTab = tabNum;
+      for (let i = 1; i <= 9; i++) {
+        const tab = document.getElementById('tab' + i);
+        const navBtn = document.getElementById('nav' + i);
+        if(tab) tab.classList.add('hidden');
+        if(navBtn) {
+          navBtn.classList.remove('bg-blue-600', 'bg-emerald-600', 'bg-emerald-700', 'text-white', 'text-emerald-100', 'shadow-sm');
+          navBtn.classList.add('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+        }
+      }
+      
+      const targetTab = document.getElementById('tab' + tabNum);
+      if(targetTab) {
+        targetTab.classList.remove('hidden');
+        targetTab.classList.add('fade-in');
+      }
+      
+      const targetNav = document.getElementById('nav' + tabNum);
+      if(targetNav) {
+        targetNav.classList.remove('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+        if(tabNum === 9) {
+            targetNav.classList.add('bg-emerald-600', 'text-white', 'shadow-sm');
+            calculateTotal(); 
+        } else {
+            targetNav.classList.add('bg-blue-600', 'text-white', 'shadow-sm');
+        }
+      }
+      if (!skipSave) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        scheduleAutoSave();
+      }
+    }
+
+    function gradeSection(tabNum, isRestoring = false) {
+      const section = document.getElementById('tab' + tabNum);
+      if (!section) return;
+      const questions = section.querySelectorAll('.question-block');
+      
+      let allAnswered = true;
+      questions.forEach(q => {
+        const qId = q.getAttribute('data-qid');
+        if (q.querySelector('.order-select')) {
+          let selects = q.querySelectorAll('.order-select');
+          selects.forEach(s => { if(s.value === "") allAnswered = false; });
+        } else if (qId === 'q8-3') {
+           let checkboxes = q.querySelectorAll('input[type="checkbox"]:checked');
+           let radio = q.querySelector('input[type="radio"]:checked');
+           if (checkboxes.length !== 2 || !radio) allAnswered = false;
+        } else if (q.querySelector('input[type="checkbox"]')) {
+           let checked = q.querySelectorAll('input:checked');
+           if (checked.length === 0) allAnswered = false; 
+        } else {
+           if (!q.querySelector('input:checked')) allAnswered = false;
+        }
+      });
+      
+      if (!allAnswered && !isRestoring) {
+        showToast('⚠️ この大問のすべての設問（順序や2つ選ぶ問題を含む）に回答してから採点してください。', true);
+        return;
+      }
+      
+      let earnedPoints = 0;
+
+      questions.forEach(qBlock => {
+        const qId = qBlock.getAttribute('data-qid');
+        const correct = answers[qId];
+        const pointValue = pointWeights[qId];
+        let isCorrect = false;
+        let userAnswerStr = "";
+
+        if (qBlock.querySelector('.order-select')) {
+          let selects = qBlock.querySelectorAll('.order-select');
+          selects.forEach(s => userAnswerStr += s.value);
+          if (userAnswerStr === correct || (Array.isArray(correct) && correct.includes(userAnswerStr))) isCorrect = true;
+        } else if (qId === 'q8-3') {
+           let checks = Array.from(qBlock.querySelectorAll('input[type="checkbox"]:checked')).map(el => el.value);
+           let radioEl = qBlock.querySelector('input[type="radio"]:checked');
+           let radio = radioEl ? radioEl.value : '';
+           let correctChecks = [correct[0], correct[1]]; 
+           let correctRadio = correct[2]; 
+           if (checks.length === 2 && checks.includes(correctChecks[0]) && checks.includes(correctChecks[1]) && radio === correctRadio) {
+               isCorrect = true;
+           }
+        } else if (qBlock.querySelector('input[type="checkbox"]')) {
+           let checkedVals = Array.from(qBlock.querySelectorAll('input:checked')).map(el => el.value);
+           if (Array.isArray(correct)) {
+             if (checkedVals.length === correct.length && checkedVals.every(v => correct.includes(v))) {
+               isCorrect = true;
+             }
+           }
+        } else {
+           let checked = qBlock.querySelector('input:checked');
+           if (checked && checked.value === correct) isCorrect = true;
+        }
+        
+        qBlock.querySelectorAll('input, select').forEach(input => {
+          input.disabled = true;
+          if(input.parentElement.tagName === 'LABEL') input.parentElement.classList.remove('hover:bg-blue-50', 'cursor-pointer');
+        });
+        
+        const expDiv = qBlock.querySelector('.explanation');
+        expDiv.classList.remove('hidden');
+        
+        if (isCorrect) {
+          earnedPoints += pointValue;
+          expDiv.innerHTML = `<span class="font-bold text-green-700 text-lg">✓ 正解！ (+${pointValue}点)</span><p class="mt-2 text-slate-700 leading-relaxed">${explanations[qId]}</p>`;
+          expDiv.className = "explanation mt-4 p-4 rounded-lg text-sm bg-green-50 border border-green-300 shadow-inner";
+        } else {
+          expDiv.innerHTML = `<span class="font-bold text-red-700 text-lg">✗ 不正解</span><p class="mt-2 text-slate-700 leading-relaxed">${explanations[qId]}</p>`;
+          expDiv.className = "explanation mt-4 p-4 rounded-lg text-sm bg-red-50 border border-red-300 shadow-inner";
+        }
+      });
+      
+      userScores[tabNum] = earnedPoints;
+
+      const navBtn = document.getElementById('nav' + tabNum);
+      if (navBtn) {
+        navBtn.innerText = `第${tabNum}問 ✓`;
+      }
+      
+      section.querySelector('.grade-btn').classList.add('hidden');
+      
+      const existingSummary = section.querySelector('.section-result-summary');
+      if (existingSummary) existingSummary.remove();
+
+      let nextBtnHtml = '';
+      if(tabNum < 8) {
+        nextBtnHtml = `<button onclick="switchTab(${tabNum+1})" class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-3 px-6 rounded-full transition-colors">次の大問へ進む</button>`;
+      } else {
+        nextBtnHtml = `<button onclick="switchTab(9)" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold py-3 px-6 rounded-full transition-colors">総合結果を見る</button>`;
+      }
+
+      let saveBtnHtml = `<button onclick="openSaveModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-full shadow transition-colors">💾 ここまでを保存</button>`;
+
+      let resultDiv = document.createElement('div');
+      resultDiv.className = "section-result-summary flex flex-wrap justify-center items-center mt-6 fade-in gap-3 font-sans";
+      resultDiv.innerHTML = `<div class="bg-white px-8 py-4 rounded-full shadow border border-gray-200 text-xl font-bold">得点: <span class="text-blue-600 text-3xl font-black">${earnedPoints}</span> / ${maxScores[tabNum]} 点</div> ${nextBtnHtml} ${saveBtnHtml}`;
+      section.querySelector('.space-y-6').appendChild(resultDiv);
+
+      updateReportCard();
+      if (!isRestoring) {
+        scheduleAutoSave();
+      }
+    }
+
+    function updateReportCard() {
+      let totalEarned = 0;
+      let gradedCount = 0;
+      for(let i = 1; i <= 8; i++) {
+        let qScoreEl = document.getElementById(`score-q${i}`);
+        if(userScores[i] !== undefined) {
+          totalEarned += userScores[i];
+          gradedCount++;
+          if (qScoreEl) qScoreEl.innerText = userScores[i];
+        } else {
+          if (qScoreEl) qScoreEl.innerText = '未採点';
+        }
+      }
+      let totalEl = document.getElementById('score-total');
+      if (totalEl) totalEl.innerText = totalEarned;
+      let pctEl = document.getElementById('score-percentage');
+      if (pctEl) pctEl.innerText = totalEarned;
+      let detailEl = document.getElementById('score-progress-detail');
+      if (detailEl) detailEl.innerText = `採点済み: ${gradedCount} / 8 大問`;
+    }
+
+    function calculateTotal() {
+      const uncompletedWarning = document.getElementById('uncompleted-warning');
+      const gradedCount = Object.keys(userScores).length;
+      
+      updateReportCard();
+
+      if (gradedCount < 8) {
+        uncompletedWarning.classList.remove('hidden');
+      } else {
+        uncompletedWarning.classList.add('hidden');
+      }
+
+      let totalScore = 0;
+      for (let i = 1; i <= 8; i++) {
+        totalScore += (userScores[i] || 0);
+      }
+      
+      const messageEl = document.getElementById('score-message');
+      if (gradedCount < 8) {
+        messageEl.innerText = `現在 ${gradedCount} 大問まで採点済みです（途中経過スコア: ${totalScore}点）。授業終了時は「💾 途中経過を保存する」から保存してください。`;
+        messageEl.className = "mt-6 text-base font-bold text-center text-amber-700 font-sans";
+      } else if (totalScore >= 90) {
+        messageEl.innerText = "素晴らしい成績です！クジラ構文や仮定法倒置、4つの架け橋構文も完璧にマスターしています！";
+        messageEl.className = "mt-6 text-lg font-bold text-center text-green-600";
+      } else if (totalScore >= 75) {
+        messageEl.innerText = "高得点です！間違えた問題の文法解説を確認し、構文の把握スピードをさらに高めましょう。";
+        messageEl.className = "mt-6 text-lg font-bold text-center text-blue-600";
+      } else if (totalScore >= 60) {
+        messageEl.innerText = "平均的なスコアです。ヘッダーの「文法・構文ハイライト」をONにして、重要構文の骨組みを復習しましょう。";
+        messageEl.className = "mt-6 text-lg font-bold text-center text-orange-600";
+      } else {
+        messageEl.innerText = "伸びしろがたっぷりあります！まずは大過去・分詞構文・仮定法・比較構文の基本ルールを解説でしっかり固めましょう。";
+        messageEl.className = "mt-6 text-lg font-bold text-center text-red-600";
+      }
+    }
+
+    window.toggleGrammarHighlight = toggleGrammarHighlight;
+    window.switchTab = switchTab;
+    window.gradeSection = gradeSection;
+    window.calculateTotal = calculateTotal;
+    window.openSaveModal = openSaveModal;
+    window.closeSaveModal = closeSaveModal;
+    window.saveByPassphrase = saveByPassphrase;
+    window.loadByPassphrase = loadByPassphrase;
+    window.copySaveCode = copySaveCode;
+    window.restoreFromSaveCodeInput = restoreFromSaveCodeInput;
+    window.resetAllProgress = resetAllProgress;
+
+    document.addEventListener('change', (e) => {
+      if (e.target.matches('input[type="radio"], input[type="checkbox"], select.order-select')) {
+        scheduleAutoSave();
+      }
+    });
+
+    updateReportCard();
+    initCloudStorage();
+  </script>
+</body>
+</html>
